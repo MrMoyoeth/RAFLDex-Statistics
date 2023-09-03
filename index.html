@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAFLDex Statistics by SrMessi.eth</title>
+    <!-- Add Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- Link the custom CSS file -->
+        <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>RAFLDex Statistics by SrMessi.eth</h1>
+
+    <!-- Container for the chart -->
+    <div class="chart-container" style="height: 400px;">
+        <canvas id="buyEntryChart"></canvas>
+    </div>
+
+    <!-- Add a 3px separation -->
+    <div style="height: 3px;"></div>
+
+    <!-- Container for the Create Raffle chart -->
+    <div class="chart-container" style="height: 400px;">
+        <canvas id="createRaffleChart"></canvas>
+    </div>
+
+    <!-- Add a 3px separation -->
+    <div style="height: 3px;"></div>
+
+    <!-- Container for the Cancel Raffle chart -->
+    <div class="chart-container" style="height: 400px;">
+        <canvas id="cancelRaffleChart"></canvas>
+    </div>
+    <script>
+        // Replace with your Etherscan API key
+        const etherscanApiKey = 'XI5R9WPV2NGFQQTZ9WQZHMYTCI119GPQT5';
+
+        // Specify the contract address
+        const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92';
+
+        // Function signature of the "buyEntry" function
+        const buyEntrySignature = '0xb26a78c5'; // Replace with the actual function signature
+
+        // Function signature of the "cancelRaffle" function
+        const cancelRaffleSignature = '0x5fba3171'; // Replace with the actual function signature
+
+        // Function signatures to filter for the new chart
+        const createRaffleSignatures = ['0xcf482ee9', '0x01a6e623', '0xead5c7bd'];
+
+        // Construct the Etherscan API URL to fetch transactions
+        const apiUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddress}&apikey=${etherscanApiKey}`;
+
+        // Fetch data from the Etherscan API
+        fetch(apiUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                const transactions = data.result;
+
+                // Filter transactions for the "buyEntry" function
+                const buyEntryTransactions = transactions.filter((transaction) => {
+                    return transaction.input.startsWith(buyEntrySignature);
+                });
+
+                // Filter transactions for the "cancelRaffle" function
+                const cancelRaffleTransactions = transactions.filter((transaction) => {
+                    return transaction.input.startsWith(cancelRaffleSignature);
+                });
+
+                // Filter transactions for the specified function signatures for the new chart
+                const createRaffleTransactions = transactions.filter((transaction) => {
+                    return createRaffleSignatures.some((signature) => transaction.input.includes(signature));
+                });
+
+                // Process and display transactions for each chart as needed
+                // You can access transaction details like hash, from, to, value, etc.
+                console.log('BuyEntry Transactions:', buyEntryTransactions);
+                console.log('CancelRaffle Transactions:', cancelRaffleTransactions);
+                console.log('CreateRaffle Transactions:', createRaffleTransactions);
+
+                // Process transactions and group by day for BuyEntry chart
+                const buyEntryTransactionsByDay = {};
+                buyEntryTransactions.forEach((transaction) => {
+                    const timestamp = parseInt(transaction.timeStamp) * 1000;
+                    const date = new Date(timestamp);
+                    const day = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+                    if (buyEntryTransactionsByDay[day]) {
+                        buyEntryTransactionsByDay[day]++;
+                    } else {
+                        buyEntryTransactionsByDay[day] = 1;
+                    }
+                });
+
+                // Process transactions and group by day for CancelRaffle chart
+                const cancelRaffleTransactionsByDay = {};
+                cancelRaffleTransactions.forEach((transaction) => {
+                    const timestamp = parseInt(transaction.timeStamp) * 1000;
+                    const date = new Date(timestamp);
+                    const day = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+                    if (cancelRaffleTransactionsByDay[day]) {
+                        cancelRaffleTransactionsByDay[day]++;
+                    } else {
+                        cancelRaffleTransactionsByDay[day] = 1;
+                    }
+                });
+
+                // Process transactions and group by day for CreateRaffle chart
+                const createRaffleTransactionsByDay = {};
+                createRaffleTransactions.forEach((transaction) => {
+                    const timestamp = parseInt(transaction.timeStamp) * 1000;
+                    const date = new Date(timestamp);
+                    const day = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+                    if (createRaffleTransactionsByDay[day]) {
+                        createRaffleTransactionsByDay[day]++;
+                    } else {
+                        createRaffleTransactionsByDay[day] = 1;
+                    }
+                });
+
+                // Convert data to arrays for each chart
+                const buyEntryLabels = Object.keys(buyEntryTransactionsByDay);
+                const buyEntryDataValues = buyEntryLabels.map((day) => buyEntryTransactionsByDay[day]);
+
+                const cancelRaffleLabels = Object.keys(cancelRaffleTransactionsByDay);
+                const cancelRaffleDataValues = cancelRaffleLabels.map((day) => cancelRaffleTransactionsByDay[day]);
+
+                const createRaffleLabels = Object.keys(createRaffleTransactionsByDay);
+                const createRaffleDataValues = createRaffleLabels.map((day) => createRaffleTransactionsByDay[day]);
+
+                // Create BuyEntry Chart
+                const buyEntryCtx = document.getElementById('buyEntryChart').getContext('2d');
+                new Chart(buyEntryCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: buyEntryLabels,
+                        datasets: [{
+                            label: 'BuyEntry Transactions per Day',
+                            data: buyEntryDataValues,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'category',
+                                title: {
+                                    display: true,
+                                    text: 'Date'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Transactions'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Create CreateRaffle Chart
+                const createRaffleCtx = document.getElementById('createRaffleChart').getContext('2d');
+                new Chart(createRaffleCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: createRaffleLabels,
+                        datasets: [{
+                            label: 'CreateRaffle Transactions per Day',
+                            data: createRaffleDataValues,
+                            backgroundColor: 'rgba(192, 75, 192, 0.2)',
+                            borderColor: 'rgba(192, 75, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'category',
+                                title: {
+                                    display: true,
+                                    text: 'Date'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Transactions'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Create CancelRaffle Chart
+                const cancelRaffleCtx = document.getElementById('cancelRaffleChart').getContext('2d');
+                new Chart(cancelRaffleCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: cancelRaffleLabels,
+                        datasets: [{
+                            label: 'CancelRaffle Transactions per Day',
+                            data: cancelRaffleDataValues,
+                            backgroundColor: 'rgba(192, 192, 75, 0.2)',
+                            borderColor: 'rgba(192, 192, 75, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'category',
+                                title: {
+                                    display: true,
+                                    text: 'Date'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Transactions'
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    </script>
+</body>
+</html>
