@@ -6,8 +6,8 @@
     <title>RAFLDex Statistics by SrMessi.eth</title>
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- Link the custom CSS file -->
-        <link rel="stylesheet" href="styles.css">
+    <!-- Link the custom CSS file -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>RAFLDex Statistics by SrMessi.eth</h1>
@@ -57,78 +57,69 @@
             .then((data) => {
                 const transactions = data.result;
 
-                // Filter transactions for the "buyEntry" function
-                const buyEntryTransactions = transactions.filter((transaction) => {
-                    return transaction.input.startsWith(buyEntrySignature);
-                });
-
-                // Filter transactions for the "cancelRaffle" function
-                const cancelRaffleTransactions = transactions.filter((transaction) => {
-                    return transaction.input.startsWith(cancelRaffleSignature);
-                });
-
-                // Filter transactions for the specified function signatures for the new chart
-                const createRaffleTransactions = transactions.filter((transaction) => {
-                    return createRaffleSignatures.some((signature) => transaction.input.includes(signature));
-                });
-
-                // Process and display transactions for each chart as needed
-                // You can access transaction details like hash, from, to, value, etc.
-                console.log('BuyEntry Transactions:', buyEntryTransactions);
-                console.log('CancelRaffle Transactions:', cancelRaffleTransactions);
-                console.log('CreateRaffle Transactions:', createRaffleTransactions);
+                // Calculate the offset between local timezone and Etherscan's timezone
+                const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
+                const etherscanTimezoneOffset = 0; // Adjust this offset if needed
+                
+                // Function to convert Unix timestamps to the Etherscan timezone
+                function convertToEtherscanTimezone(timestamp) {
+                    return new Date((timestamp * 1000) + ((localTimezoneOffset - etherscanTimezoneOffset) * 60 * 1000));
+                }
 
                 // Process transactions and group by day for BuyEntry chart
                 const buyEntryTransactionsByDay = {};
-                buyEntryTransactions.forEach((transaction) => {
-                    const timestamp = parseInt(transaction.timeStamp) * 1000;
-                    const date = new Date(timestamp);
-                    const day = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
 
-                    if (buyEntryTransactionsByDay[day]) {
-                        buyEntryTransactionsByDay[day]++;
-                    } else {
-                        buyEntryTransactionsByDay[day] = 1;
+                    if (transaction.input.startsWith(buyEntrySignature)) {
+                        if (buyEntryTransactionsByDay[day]) {
+                            buyEntryTransactionsByDay[day]++;
+                        } else {
+                            buyEntryTransactionsByDay[day] = 1;
+                        }
                     }
                 });
 
                 // Process transactions and group by day for CancelRaffle chart
                 const cancelRaffleTransactionsByDay = {};
-                cancelRaffleTransactions.forEach((transaction) => {
-                    const timestamp = parseInt(transaction.timeStamp) * 1000;
-                    const date = new Date(timestamp);
-                    const day = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
 
-                    if (cancelRaffleTransactionsByDay[day]) {
-                        cancelRaffleTransactionsByDay[day]++;
-                    } else {
-                        cancelRaffleTransactionsByDay[day] = 1;
+                    if (transaction.input.startsWith(cancelRaffleSignature)) {
+                        if (cancelRaffleTransactionsByDay[day]) {
+                            cancelRaffleTransactionsByDay[day]++;
+                        } else {
+                            cancelRaffleTransactionsByDay[day] = 1;
+                        }
                     }
                 });
 
                 // Process transactions and group by day for CreateRaffle chart
                 const createRaffleTransactionsByDay = {};
-                createRaffleTransactions.forEach((transaction) => {
-                    const timestamp = parseInt(transaction.timeStamp) * 1000;
-                    const date = new Date(timestamp);
-                    const day = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
 
-                    if (createRaffleTransactionsByDay[day]) {
-                        createRaffleTransactionsByDay[day]++;
-                    } else {
-                        createRaffleTransactionsByDay[day] = 1;
+                    if (createRaffleSignatures.some((signature) => transaction.input.includes(signature))) {
+                        if (createRaffleTransactionsByDay[day]) {
+                            createRaffleTransactionsByDay[day]++;
+                        } else {
+                            createRaffleTransactionsByDay[day] = 1;
+                        }
                     }
                 });
 
                 // Convert data to arrays for each chart
                 const buyEntryLabels = Object.keys(buyEntryTransactionsByDay);
-                const buyEntryDataValues = buyEntryLabels.map((day) => buyEntryTransactionsByDay[day]);
+                const buyEntryDataValues = buyEntryLabels.map((day) => buyEntryTransactionsByDay[day] || 0);
 
                 const cancelRaffleLabels = Object.keys(cancelRaffleTransactionsByDay);
-                const cancelRaffleDataValues = cancelRaffleLabels.map((day) => cancelRaffleTransactionsByDay[day]);
+                const cancelRaffleDataValues = cancelRaffleLabels.map((day) => cancelRaffleTransactionsByDay[day] || 0);
 
                 const createRaffleLabels = Object.keys(createRaffleTransactionsByDay);
-                const createRaffleDataValues = createRaffleLabels.map((day) => createRaffleTransactionsByDay[day]);
+                const createRaffleDataValues = createRaffleLabels.map((day) => createRaffleTransactionsByDay[day] || 0);
 
                 // Create BuyEntry Chart
                 const buyEntryCtx = document.getElementById('buyEntryChart').getContext('2d');
