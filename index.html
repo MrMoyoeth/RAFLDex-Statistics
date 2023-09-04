@@ -6,6 +6,9 @@
     <title>RAFLDex Statistics by SrMessi.eth</title>
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
     <!-- Link the custom CSS file -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -32,12 +35,27 @@
     <div class="chart-container" style="height: 400px;">
         <canvas id="cancelRaffleChart"></canvas>
     </div>
+
+    <!-- Add a 3px separation -->
+    <div style="height: 3px;"></div>
+
+    <!-- Container for the BuyEntry Tickets by Month chart -->
+    <div class="chart-container" style="height: 400px;">
+        <canvas id="buyEntryTicketsByMonthChart"></canvas>
+    </div>
+
+    <!-- Container for the newBuyEntry Tickets by Month chart -->
+    <div class="chart-container" style="height: 400px;">
+        <canvas id="newCsvComparisonChart"></canvas>
+    </div>
+
     <script>
         // Replace with your Etherscan API key
         const etherscanApiKey = 'XI5R9WPV2NGFQQTZ9WQZHMYTCI119GPQT5';
 
-        // Specify the contract address
+        // Specify the contract addresses
         const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92';
+        const tokenContractAddress = '0xe6d48bf4ee912235398b96e16db6f310c21e82cb';
 
         // Function signature of the "buyEntry" function
         const buyEntrySignature = '0xb26a78c5'; // Replace with the actual function signature
@@ -51,6 +69,17 @@
         // Construct the Etherscan API URL to fetch transactions
         const apiUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddress}&apikey=${etherscanApiKey}`;
 
+        // Construct the Etherscan API URL to fetch token balances
+        const tokenApiUrl = `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${tokenContractAddress}&apikey=${etherscanApiKey}`;
+
+        let buyEntryTicketsByMonth = {};
+        let buyEntryGhnHoldersCount = {};
+        let buyEntryAhcHoldersCount = {};
+        let buyEntryNonHoldersCount = {};
+        let buyEntryBAYCHoldersCount = {};
+        let buyEntryMAYCHoldersCount = {};
+        let buyEntryMGHNHoldersCount = {};
+
         // Fetch data from the Etherscan API
         fetch(apiUrl)
             .then((response) => response.json())
@@ -60,11 +89,31 @@
                 // Calculate the offset between local timezone and Etherscan's timezone
                 const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
                 const etherscanTimezoneOffset = 0; // Adjust this offset if needed
-                
+
                 // Function to convert Unix timestamps to the Etherscan timezone
                 function convertToEtherscanTimezone(timestamp) {
                     return new Date((timestamp * 1000) + ((localTimezoneOffset - etherscanTimezoneOffset) * 60 * 1000));
                 }
+
+                // Function to fetch token balance for an address
+                function fetchTokenBalance(address) {
+                    return fetch(`${tokenApiUrl}&address=${address}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            return data.result;
+                        })
+                        .catch((error) => {
+                            console.error(`Error fetching token balance for address ${address}:`, error);
+                            return '0';
+                        });
+                }
+
+                // Fetch addresses of BuyEntry transactions
+                const buyEntryAddresses = transactions
+                    .filter((transaction) => transaction.input.startsWith(buyEntrySignature))
+                    .map((transaction) => transaction.from.toLowerCase()); // Convert addresses to lowercase for case-insensitive comparison
+
+                console.log('Addresses obtained by buyEntrySignature:', buyEntryAddresses);
 
                 // Process transactions and group by day for BuyEntry chart
                 const buyEntryTransactionsByDay = {};
@@ -111,126 +160,213 @@
                     }
                 });
 
-                // Convert data to arrays for each chart
-                const buyEntryLabels = Object.keys(buyEntryTransactionsByDay);
-                const buyEntryDataValues = buyEntryLabels.map((day) => buyEntryTransactionsByDay[day] || 0);
+// Load and parse the CSV file
+fetch('ghn.csv')
+    .then((response) => response.text())
+    .then((csvData) => {
+        // Use PapaParse to parse the CSV data
+        Papa.parse(csvData, {
+            header: true, // Treat the first row as headers
+            dynamicTyping: true, // Parse numbers as numbers
+            skipEmptyLines: true, // Skip empty lines
+            complete: function (results) {
+                console.log('CSV Data:', results.data);
 
-                const cancelRaffleLabels = Object.keys(cancelRaffleTransactionsByDay);
-                const cancelRaffleDataValues = cancelRaffleLabels.map((day) => cancelRaffleTransactionsByDay[day] || 0);
+                // Create sets for GHN, AHC, and BAYC addresses
+                const ghnAddresses = new Set();
+                const ahcAddresses = new Set();
+                const baycAddresses = new Set();
+                const maycAddresses = new Set();
+                const mghnAddresses = new Set();
 
-                const createRaffleLabels = Object.keys(createRaffleTransactionsByDay);
-                const createRaffleDataValues = createRaffleLabels.map((day) => createRaffleTransactionsByDay[day] || 0);
+                results.data.forEach((row) => {
+                    const ghnAddress = row['GHNHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const ahcAddress = row['AHCHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const baycAddress = row['BAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const maycAddress = row['MAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const mghnAddress = row['MGHNHolderAddress']?.substring(0, 42)?.toLowerCase();
 
-                // Create BuyEntry Chart
-                const buyEntryCtx = document.getElementById('buyEntryChart').getContext('2d');
-                new Chart(buyEntryCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: buyEntryLabels,
-                        datasets: [{
-                            label: 'BuyEntry Transactions per Day',
-                            data: buyEntryDataValues,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                type: 'category',
-                                title: {
-                                    display: true,
-                                    text: 'Date'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Transactions'
-                                }
-                            }
-                        }
+                    if (ghnAddress) {
+                        ghnAddresses.add(ghnAddress);
+                        console.log(`Extracted GHN Address: ${ghnAddress}`);
+                    }
+                    if (ahcAddress) {
+                        ahcAddresses.add(ahcAddress);
+                        console.log(`Extracted AHC Address: ${ahcAddress}`);
+                    }
+
+                    if (baycAddress) {
+                        baycAddresses.add(baycAddress);
+                        console.log(`Extracted BAYC Address: ${baycAddress}`);
+                    }
+                    if (maycAddress) {
+                        maycAddresses.add(maycAddress);
+                        console.log(`Extracted MAYC Address: ${maycAddress}`);
+                    }
+
+                    if (mghnAddress) {
+                        mghnAddresses.add(mghnAddress);
+                        console.log(`Extracted MAYC Address: ${mghnAddress}`);
                     }
                 });
 
-                // Create CreateRaffle Chart
-                const createRaffleCtx = document.getElementById('createRaffleChart').getContext('2d');
-                new Chart(createRaffleCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: createRaffleLabels,
-                        datasets: [{
-                            label: 'CreateRaffle Transactions per Day',
-                            data: createRaffleDataValues,
-                            backgroundColor: 'rgba(192, 75, 192, 0.2)',
-                            borderColor: 'rgba(192, 75, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                type: 'category',
-                                title: {
-                                    display: true,
-                                    text: 'Date'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Transactions'
-                                }
+                transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const month = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                    if (transaction.input.startsWith(buyEntrySignature)) {
+                        const address = transaction.from.toLowerCase();
+                        const isGHN = ghnAddresses.has(address);
+                        const isAHC = ahcAddresses.has(address);
+                        const isBAYC = baycAddresses.has(address);
+                        const isMAYC = maycAddresses.has(address);
+                        const isMGHN = mghnAddresses.has(address);
+
+                        if (isGHN) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryGhnHoldersCount[month]) {
+                                buyEntryGhnHoldersCount[month] = 0;
                             }
-                        }
+                            buyEntryGhnHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is a GodHatesNFTees Holder`);
+                        } 
+
+                        if (isAHC) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryAhcHoldersCount[month]) {
+                                buyEntryAhcHoldersCount[month] = 0;
+                            }
+                            buyEntryAhcHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is an ApeHaterClub Holder`);
+                        } 
+
+
+                        if (isBAYC) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryBAYCHoldersCount[month]) {
+                                buyEntryBAYCHoldersCount[month] = 0;
+                            }
+                            buyEntryBAYCHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is a BAYC Holder`);
+                        } 
+
+                        if (isMAYC) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryMAYCHoldersCount[month]) {
+                                buyEntryMAYCHoldersCount[month] = 0;
+                            }
+                            buyEntryMAYCHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is a MAYC Holder`);
+                        } 
+                        if (isMGHN) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryMGHNHoldersCount[month]) {
+                                buyEntryMGHNHoldersCount[month] = 0;
+                            }
+                            buyEntryMGHNHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is a MGHN Holder`);
+                        } 
+                     
+                                                
                     }
+
+                 
+
+                    // Increment the buyEntryTicketsByMonth count for this month
+                    if (!buyEntryTicketsByMonth[month]) {
+                        buyEntryTicketsByMonth[month] = 0;
+                    }
+                    buyEntryTicketsByMonth[month]++;
                 });
 
-                // Create CancelRaffle Chart
-                const cancelRaffleCtx = document.getElementById('cancelRaffleChart').getContext('2d');
-                new Chart(cancelRaffleCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: cancelRaffleLabels,
-                        datasets: [{
-                            label: 'CancelRaffle Transactions per Day',
-                            data: cancelRaffleDataValues,
-                            backgroundColor: 'rgba(192, 192, 75, 0.2)',
-                            borderColor: 'rgba(192, 192, 75, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                type: 'category',
-                                title: {
-                                    display: true,
-                                    text: 'Date'
-                                }
+                console.log('buyEntryTicketsByMonth:', buyEntryTicketsByMonth);
+                console.log('buyEntryGhnHoldersCount:', buyEntryGhnHoldersCount);
+                console.log('buyEntryAhcHoldersCount:', buyEntryAhcHoldersCount);
+                console.log('buyEntryNonHoldersCount:', buyEntryNonHoldersCount);
+                console.log('buyEntryBAYCHoldersCount:', buyEntryBAYCHoldersCount);
+                console.log('buyEntryMAYCHoldersCount:', buyEntryMAYCHoldersCount);
+                console.log('buyEntryMGHNHoldersCount:', buyEntryMGHNHoldersCount);
+
+
+                               // Create BuyEntry Tickets by Month Chart
+const buyEntryTicketsByMonthCtx = document.getElementById('buyEntryTicketsByMonthChart').getContext('2d');
+new Chart(buyEntryTicketsByMonthCtx, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(buyEntryTicketsByMonth),
+        datasets: [
+            {
+                label: 'GodHatesNFTees Holders',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryGhnHoldersCount[month] || 0),
+                backgroundColor: 'rgba(75, 192, 75, 0.2)',
+                borderColor: 'rgba(75, 192, 75, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'ApeHaterClub Holders',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryAhcHoldersCount[month] || 0),
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'BAYC Holders',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryBAYCHoldersCount[month] || 0),
+                backgroundColor: 'rgba(123, 88, 93, 0.2)',
+                borderColor: 'rgba(123, 88, 93, 1)',
+                borderWidth: 1
+            },
+
+            {
+                label: 'MAYC Holders',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryMAYCHoldersCount[month] || 0),
+                backgroundColor: 'rgba(8, 77, 66, 0.2)',
+                borderColor: 'rgba(8, 77, 66, 1)',
+                borderWidth: 1  
+            },
+
+
+            {
+                label: 'MGHN Holders',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryMGHNHoldersCount[month] || 0),
+                backgroundColor: 'rgba(69, 69, 69, 0.2)',
+                borderColor: 'rgba(69, 69, 69, 1)',
+                borderWidth: 1  
+            },
+                ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: 'category',
+                title: {
+                    display: true,
+                    text: 'Month'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Entries'
+                }
+            }
+        }
+    }
+});       },
+                            error: function (error) {
+                                console.error('Error parsing CSV:', error);
                             },
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Transactions'
-                                }
-                            }
-                        }
-                    }
-                });
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('Error loading CSV file:', error);
+                    });
             })
             .catch((error) => {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching data from Etherscan:', error);
             });
     </script>
 </body>
