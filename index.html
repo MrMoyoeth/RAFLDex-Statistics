@@ -76,6 +76,8 @@
         let buyEntryBAYCHoldersCount = {};
         let buyEntryMAYCHoldersCount = {};
         let buyEntryMGHNHoldersCount = {};
+        let buyEntryAKCBHoldersCount = {};
+        let buyEntryThePlagueHoldersCount = {};
 
         // Fetch data from the Etherscan API
         fetch(apiUrl)
@@ -175,6 +177,8 @@ fetch('ghn.csv')
                 const baycAddresses = new Set();
                 const maycAddresses = new Set();
                 const mghnAddresses = new Set();
+                const akcbAddresses = new Set();
+                const theplagueAddresses = new Set();
 
                 results.data.forEach((row) => {
                     const ghnAddress = row['GHNHolderAddress']?.substring(0, 42)?.toLowerCase();
@@ -182,7 +186,8 @@ fetch('ghn.csv')
                     const baycAddress = row['BAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
                     const maycAddress = row['MAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
                     const mghnAddress = row['MGHNHolderAddress']?.substring(0, 42)?.toLowerCase();
-
+                    const akcbAddress = row['AKCBHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const theplagueAddress = row['ThePlagueHolderAddress']?.substring(0, 42)?.toLowerCase();
                     if (ghnAddress) {
                         ghnAddresses.add(ghnAddress);
                         console.log(`Extracted GHN Address: ${ghnAddress}`);
@@ -205,6 +210,16 @@ fetch('ghn.csv')
                         mghnAddresses.add(mghnAddress);
                         console.log(`Extracted MAYC Address: ${mghnAddress}`);
                     }
+
+                    if (akcbAddress) {
+                        akcbAddresses.add(akcbAddress);
+                        console.log(`Extracted AKCB Address: ${akcbAddress}`);
+                    }
+
+                    if (theplagueAddress) {
+                        theplagueAddresses.add(theplagueAddress);
+                        console.log(`Extracted The Plague Address: ${theplagueAddress}`);
+                    }
                 });
 
                 transactions.forEach((transaction) => {
@@ -218,6 +233,8 @@ fetch('ghn.csv')
                         const isBAYC = baycAddresses.has(address);
                         const isMAYC = maycAddresses.has(address);
                         const isMGHN = mghnAddresses.has(address);
+                        const isAKCB = akcbAddresses.has(address);
+                        const isThePlague = theplagueAddresses.has(address);
 
                         if (isGHN) {
                             // Initialize the count for this month if it doesn't exist
@@ -264,6 +281,23 @@ fetch('ghn.csv')
                             console.log(`Address: ${address} is a MGHN Holder`);
                         } 
                      
+                        if (isAKCB) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryAKCBHoldersCount[month]) {
+                                buyEntryAKCBHoldersCount[month] = 0;
+                            }
+                            buyEntryAKCBHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is a AKCB Holder`);
+                        } 
+                        if (isThePlague) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryThePlagueHoldersCount[month]) {
+                                buyEntryThePlagueHoldersCount[month] = 0;
+                            }
+                            buyEntryThePlagueHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is a The Plague Holder`);
+                        } 
+                     
                                                 
                     }
 
@@ -283,6 +317,8 @@ fetch('ghn.csv')
                 console.log('buyEntryBAYCHoldersCount:', buyEntryBAYCHoldersCount);
                 console.log('buyEntryMAYCHoldersCount:', buyEntryMAYCHoldersCount);
                 console.log('buyEntryMGHNHoldersCount:', buyEntryMGHNHoldersCount);
+                console.log('buyEntryAKCBHoldersCount:', buyEntryAKCBHoldersCount);
+                console.log('buyEntryThePlagueHoldersCount:', buyEntryThePlagueHoldersCount);
 
                 
                 // Create BuyEntry Transactions by Day Chart
@@ -420,30 +456,30 @@ new Chart(buyEntryTicketsByMonthCtx, {
             {
                 label: 'GodHatesNFTees Holders',
                 data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryGhnHoldersCount[month] || 0),
-                backgroundColor: 'rgba(75, 192, 75, 0.2)',
-                borderColor: 'rgba(75, 192, 75, 1)',
+                backgroundColor: 'rgba(58, 39, 245, 0.8)',
+                borderColor: 'rgba(58, 39, 245, 0.8)',
                 borderWidth: 1
             },
             {
                 label: 'ApeHaterClub Holders',
                 data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryAhcHoldersCount[month] || 0),
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(39, 245, 230, 0.8)',
+                borderColor: 'rgba(39, 245, 230, 0.8)',
                 borderWidth: 1
             },
             {
                 label: 'BAYC Holders',
                 data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryBAYCHoldersCount[month] || 0),
-                backgroundColor: 'rgba(123, 88, 93, 0.2)',
-                borderColor: 'rgba(123, 88, 93, 1)',
+                backgroundColor: 'rgba(245, 67, 39, 0.8)',
+                borderColor: 'rgba(245, 67, 39, 0.8)',
                 borderWidth: 1
             },
 
             {
                 label: 'MAYC Holders',
                 data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryMAYCHoldersCount[month] || 0),
-                backgroundColor: 'rgba(8, 77, 66, 0.2)',
-                borderColor: 'rgba(8, 77, 66, 1)',
+                backgroundColor: 'rgba(187, 245, 39, 0.8)',
+                borderColor: 'rgba(187, 245, 39, 0.8)',
                 borderWidth: 1  
             },
 
@@ -451,8 +487,24 @@ new Chart(buyEntryTicketsByMonthCtx, {
             {
                 label: 'MGHN Holders',
                 data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryMGHNHoldersCount[month] || 0),
-                backgroundColor: 'rgba(69, 69, 69, 0.2)',
-                borderColor: 'rgba(69, 69, 69, 1)',
+                backgroundColor: 'rgba(153, 151, 27, 0.8))',
+                borderColor: 'rgba(153, 151, 27, 0.8)',
+                borderWidth: 1  
+            },
+
+            {
+                label: 'AKCB Holders',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryAKCBHoldersCount[month] || 0),
+                backgroundColor: 'rgba(140, 19, 88, 0.8)',
+                borderColor: 'rgba(140, 19, 88, 0.8)',
+                borderWidth: 1  
+            },
+
+            {
+                label: 'The Plague Holders',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryThePlagueHoldersCount[month] || 0),
+                backgroundColor: 'rgba(72, 251, 62, 0.8)',
+                borderColor: 'rgba(72, 251, 62, 0.8)',
                 borderWidth: 1  
             },
                 ]
