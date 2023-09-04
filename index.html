@@ -44,10 +44,7 @@
         <canvas id="buyEntryTicketsByMonthChart"></canvas>
     </div>
 
-    <!-- Container for the newBuyEntry Tickets by Month chart -->
-    <div class="chart-container" style="height: 400px;">
-        <canvas id="newCsvComparisonChart"></canvas>
-    </div>
+ 
 
     <script>
         // Replace with your Etherscan API key
@@ -287,6 +284,131 @@ fetch('ghn.csv')
                 console.log('buyEntryMAYCHoldersCount:', buyEntryMAYCHoldersCount);
                 console.log('buyEntryMGHNHoldersCount:', buyEntryMGHNHoldersCount);
 
+                
+                // Create BuyEntry Transactions by Day Chart
+const buyEntryTransactionsByDayCtx = document.getElementById('buyEntryChart').getContext('2d');
+new Chart(buyEntryTransactionsByDayCtx, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(buyEntryTransactionsByDay),
+        datasets: [
+            {
+                label: 'BuyEntry Transactions',
+                data: Object.keys(buyEntryTransactionsByDay).map((day) => buyEntryTransactionsByDay[day] || 0),
+                backgroundColor: 'rgba(75, 192, 75, 0.2)',
+                borderColor: 'rgba(75, 192, 75, 1)',
+                borderWidth: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: 'category',
+                title: {
+                    display: true,
+                    text: 'Day'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Transactions'
+                }
+            }
+        }
+    }
+});
+
+// Create CancelRaffle Transactions by Day Chart if the canvas element exists
+const cancelRaffleTransactionsByDayCanvas = document.getElementById('cancelRaffleChart');
+if (cancelRaffleTransactionsByDayCanvas) {
+    const cancelRaffleTransactionsByDayCtx = cancelRaffleTransactionsByDayCanvas.getContext('2d');
+    new Chart(cancelRaffleTransactionsByDayCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(cancelRaffleTransactionsByDay),
+            datasets: [
+                {
+                    label: 'CancelRaffle Transactions',
+                    data: Object.keys(cancelRaffleTransactionsByDay).map((day) => cancelRaffleTransactionsByDay[day] || 0),
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Day'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Transactions'
+                    }
+                }
+            }
+        }
+    });
+} else {
+    console.error('Canvas element for CancelRaffle Transactions by Day Chart not found.');
+}
+
+
+// Create CreateRaffle Transactions by Day Chart if the canvas element exists
+const createRaffleTransactionsByDayCanvas = document.getElementById('createRaffleChart');
+if (createRaffleTransactionsByDayCanvas) {
+    const createRaffleTransactionsByDayCtx = createRaffleTransactionsByDayCanvas.getContext('2d');
+    new Chart(createRaffleTransactionsByDayCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(createRaffleTransactionsByDay),
+            datasets: [
+                {
+                    label: 'CreateRaffle Transactions',
+                    data: Object.keys(createRaffleTransactionsByDay).map((day) => createRaffleTransactionsByDay[day] || 0),
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Day'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Transactions'
+                    }
+                }
+            }
+        }
+    });
+} else {
+    console.error('Canvas element for CreateRaffle Transactions by Day Chart not found.');
+}
 
                                // Create BuyEntry Tickets by Month Chart
 const buyEntryTicketsByMonthCtx = document.getElementById('buyEntryTicketsByMonthChart').getContext('2d');
@@ -355,7 +477,9 @@ new Chart(buyEntryTicketsByMonthCtx, {
             }
         }
     }
-});       },
+});  
+
+},
                             error: function (error) {
                                 console.error('Error parsing CSV:', error);
                             },
