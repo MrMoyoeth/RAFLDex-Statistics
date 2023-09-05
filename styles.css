@@ -1,37 +1,180 @@
-/* Reset default margin and padding */
-body, h1, h2, h3, p {
-    margin: 0;
-    padding: 0;
-}
+/* Apply a background image and color to the body */
 
-/* Apply a background color to the body */
+
+
 body {
+    background-image: url(pfp.png);
+    background-size: cover;
     background-color: #101419;
     color: #ffffff;
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    flex-direction: column; /* Stack content vertically from top to bottom */
+    justify-content: flex-start; /* Align content to the top */
+    align-items: flex-start; /* Align content to the left */
+    height: 100vh;
+    background: hsl(50%, 37%, .5);
 }
 
 /* Style the page title */
 h1 {
-    background-color: #283042;
+    background-color: #1c2533;
+    color: greenyellow;
+    font: bolder;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-style: italic;
     text-align: center;
-    padding: 20px 0;
-    font-size: 24px;
+    font-size: 36px;
+    padding: 20px;
+    margin: 0;
 }
 
-/* Style the chart containers */
+/* Style the container for charts */
 .chart-container {
     background-color: #1c2533;
-    margin: 0 auto;
-    max-width: 80%;
-    height: 400px; /* Double the height */
+    margin: 20px; /* Adjust margin for spacing */
+    width: 30%; /* Set the desired width for the charts */
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 10px;
     overflow: hidden;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    height: 1600px; /* Set the desired height for the charts (doubled) */
+    display: flex; /* Use flex display */
+    flex-direction: column; /* Stack charts vertically from top to bottom */
+    align-items: flex-start; /* Align charts to the left */
+    justify-content: center; /* Center charts horizontally within the container */
 }
 
 /* Style the canvas elements inside the chart containers */
 canvas {
     background-color: #1c2533;
     border-radius: 10px;
+    width: 100%;
+}
+
+
+/* Common button styles */
+.send-button11,
+.send-button22,
+.send-button33,
+.send-button44 {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.connect-button1 {
+    background:#007BFF;
+    border-color: chartreuse;
+    font: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #101419;
+    color: #ffffff;
+    border-style: solid;
+    padding: 1px;
+}
+
+
+/* Button 1 styles */
+.send-button11 {
+    background: linear-gradient(to bottom,#763c28, #763c28);
+    color: #ffffff;
+    position: absolute;
+    bottom: -50px;
+    right: 900px;
+    width: 250px; /* Set a fixed width for the button */
+    white-space: normal; /* Allow text to wrap within the width */
+    overflow: hidden; /* Hide text that exceeds the width */
+    text-overflow: ellipsis; /* Add an ellipsis for overflow */
+}
+
+/* Button 2 styles */
+.send-button22 {
+    background: linear-gradient(to bottom, #B35D00, #B35D00);
+    color: #ffffff;
+    position: absolute;
+    bottom: -50px;
+    right: 600px;
+    width: 250px; /* Set a fixed width for the button */
+    white-space: normal; /* Allow text to wrap within the width */
+    overflow: hidden; /* Hide text that exceeds the width */
+    text-overflow: ellipsis; /* Add an ellipsis for overflow */
+}
+
+/* Button 3 styles */
+.send-button33 {
+    background: linear-gradient(to bottom, #C0C0C0, #C0C0C0);
+    color: #ffffff;
+    position: absolute;
+    bottom: -50px;
+    right: 300px;
+    width: 250px; /* Set a fixed width for the button */
+    white-space: normal; /* Allow text to wrap within the width */
+    overflow: hidden; /* Hide text that exceeds the width */
+    text-overflow: ellipsis; /* Add an ellipsis for overflow */
+}
+
+/* Button 4 styles */
+.send-button44 {
+    background: linear-gradient(to bottom, #FFD700, #FFD700);
+    color: #ffffff;
+    position: absolute;
+    bottom: -50px;
+    right: 0px;
+    width: 250px; /* Set a fixed width for the button */
+    white-space: normal; /* Allow text to wrap within the width */
+    overflow: hidden; /* Hide text that exceeds the width */
+    text-overflow: ellipsis; /* Add an ellipsis for overflow */
+}
+
+.p1 {
+    font-size: x-large;
+    background-color: transparent;
+    background-blend-mode:unset;
+    background-size: 50% 50%;
+    text-shadow: #101419 1px 1px;
+    color: greenyellow;
+    text-rendering: optimizeLegibility;
+    text-decoration: solid;
+    text-decoration-color: #333;
+    text-decoration-style: solid;
+    text-emphasis-color: black;
+    text-rendering: auto;
+    font:caption;
+    font-style: normal;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    position: absolute;
+    bottom: 100px;
+    top: 150px;
+    right: 50px;
+    left: 600px;
+    box-sizing: content-box;
+}
+
+.p33 {
+  
+    font-size: x-large;
+    position: absolute;
+    bottom: 100px;
+    top: 1150px;
+    right: 50px;
+    left: 600px;
+    box-sizing: content-box;
+    color: yellow;
+    text-shadow: #101419 1px 1px;
+}
+
+.img1 {
+margin-top: -200px;
+margin-left: 950px;
+ 
+    
 }
