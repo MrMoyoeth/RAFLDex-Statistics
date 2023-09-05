@@ -8,6 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
@@ -79,6 +81,14 @@
 
     <!-- Add a 3px separation -->
     <div style="height: 3px;"></div>
+
+        <!-- Container for the chart -->
+        <div class="chart-container" style="height: 400px;">
+            <canvas id="buyEntryChart2"></canvas>
+        </div>
+    
+        <!-- Add a 3px separation -->
+        <div style="height: 3px;"></div>
 
     <!-- Container for the Create Raffle chart -->
     <div class="chart-container" style="height: 400px;">
@@ -201,7 +211,8 @@ document.getElementById('send-button4').addEventListener('click', event =>{
 
         // Construct the Etherscan API URL to fetch token balances
         const tokenApiUrl = `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${tokenContractAddress}&apikey=${etherscanApiKey}`;
-
+        
+        let buyEntryTransactionsByDay = {};
         let buyEntryTicketsByMonth = {};
         let buyEntryGhnHoldersCount = {};
         let buyEntryAhcHoldersCount = {};
@@ -247,8 +258,9 @@ document.getElementById('send-button4').addEventListener('click', event =>{
 
                 console.log('Addresses obtained by buyEntrySignature:', buyEntryAddresses);
 
-                // Process transactions and group by day for BuyEntry chart
-                const buyEntryTransactionsByDay = {};
+
+                                // Process transactions and group by day for BuyEntry chart
+                                const buyEntryTransactionsByDay = {};
                 transactions.forEach((transaction) => {
                     const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
                     const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
@@ -261,6 +273,33 @@ document.getElementById('send-button4').addEventListener('click', event =>{
                         }
                     }
                 });
+
+
+
+                 // Process transactions and sum _numberEntries for BuyEntry chart
+    const buyEntryTotalEntriesByDay = {};
+    transactions.forEach((transaction) => {
+        const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+        const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+        if (transaction.input.startsWith(buyEntrySignature)) {
+            // Decode the input data to get _numberEntries
+            const inputData = transaction.input.substring(10); // Remove the function signature
+            const web3 = new Web3();
+            const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
+
+            // Extract _numberEntries and sum it up
+            const numberEntries = parseInt(decodedData[1]);
+            
+            if (buyEntryTotalEntriesByDay[day]) {
+                buyEntryTotalEntriesByDay[day] += numberEntries;
+            } else {
+                buyEntryTotalEntriesByDay[day] = numberEntries;
+            }
+        }
+    });
+
+    console.log('buyEntryTotalEntriesByDay:', buyEntryTotalEntriesByDay);
 
                 // Process transactions and group by day for CancelRaffle chart
                 const cancelRaffleTransactionsByDay = {};
@@ -459,11 +498,11 @@ const buyEntryTransactionsByDayCtx = document.getElementById('buyEntryChart').ge
 new Chart(buyEntryTransactionsByDayCtx, {
     type: 'bar',
     data: {
-        labels: Object.keys(buyEntryTransactionsByDay),
+        labels: Object.keys(buyEntryTotalEntriesByDay),
         datasets: [
             {
-                label: 'BuyEntry Transactions',
-                data: Object.keys(buyEntryTransactionsByDay).map((day) => buyEntryTransactionsByDay[day] || 0),
+                label: 'Tickets Purchased',
+                data: Object.keys(buyEntryTotalEntriesByDay).map((day) => buyEntryTotalEntriesByDay[day] || 0),
                 backgroundColor: 'rgba(75, 192, 75, 0.2)',
                 borderColor: 'rgba(75, 192, 75, 1)',
                 borderWidth: 1
@@ -485,12 +524,14 @@ new Chart(buyEntryTransactionsByDayCtx, {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Transactions'
+                    text: 'Entries'
                 }
             }
         }
-    }
-});
+        },
+    })
+
+
 
 // Create CancelRaffle Transactions by Day Chart if the canvas element exists
 const cancelRaffleTransactionsByDayCanvas = document.getElementById('cancelRaffleChart');
@@ -528,9 +569,11 @@ if (cancelRaffleTransactionsByDayCanvas) {
                         text: 'Transactions'
                     }
                 }
-            }
-        }
-    });
+            },
+         
+    }
+        })
+    
 } else {
     console.error('Canvas element for CancelRaffle Transactions by Day Chart not found.');
 }
@@ -572,12 +615,52 @@ if (createRaffleTransactionsByDayCanvas) {
                         text: 'Transactions'
                     }
                 }
-            }
-        }
-    });
+            },
+            }        
+    })
 } else {
     console.error('Canvas element for CreateRaffle Transactions by Day Chart not found.');
 }
+
+ // Create BuyEntry Transactions by Day Chart
+ const buyEntryTransactionsByDayCtxs = document.getElementById('buyEntryChart2').getContext('2d');
+new Chart(buyEntryTransactionsByDayCtxs, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(buyEntryTransactionsByDay),
+        datasets: [
+            {
+                label: 'BuyEntry Transactions',
+                data: Object.keys(buyEntryTransactionsByDay).map((day) => buyEntryTransactionsByDay[day] || 0),
+                backgroundColor: 'rgba(75, 192, 75, 0.2)',
+                borderColor: 'rgba(75, 192, 75, 1)',
+                borderWidth: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: 'category',
+                title: {
+                    display: true,
+                    text: 'Day'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Transactions'
+                }
+            }
+        },
+
+         }
+});
+            
 
                                // Create BuyEntry Tickets by Month Chart
                                
@@ -658,25 +741,21 @@ new Chart(buyEntryTicketsByMonthCtx, {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Entries'
+                    text: 'Txs'
                 }
             }
         },
-        plugins: {
-            title: {
-                display: true, // Display the chart title
-                text: 'BuyEntry Txs by Collections Holders', // Customize the chart title text
-                font: {
-                    size: 24 // Adjust the font size as needed
-                }
-            }
-        }
+   
     }
     
 });  
 
 
+
+
 },
+
+
 
                             error: function (error) {
                                 console.error('Error parsing CSV:', error);
