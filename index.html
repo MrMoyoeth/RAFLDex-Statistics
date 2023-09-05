@@ -6,14 +6,71 @@
     <title>RAFLDex Statistics by SrMessi.eth</title>
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <!-- Link the custom CSS file -->
     <link rel="stylesheet" href="styles.css">
+
+    <button id="connect-button" class="connect-button1">Connect Metamask</button>
+
 </head>
 <body>
-    <h1>RAFLDex Statistics by SrMessi.eth</h1>
+
+    <p id="p" class="p1">This webpage provides comprehensive statistics and insights into the RAFLDex cryptocurrency platform, offering a visual representation of various transaction data and key metrics. Designed by SrMessi.eth, this dashboard offers valuable information to users and enthusiasts of RAFLDex.
+<br>
+<br>
+        Features:
+        <br><br>
+        -Connect Metamask: The "Connect Metamask" button allows users to connect their Metamask wallet to access specific functionalities and interact with the RAFLDex platform.
+        <br><br>
+        -Donation Buttons: There are four donation buttons, each representing a different amount of ETH donation that users can make to support the platform.
+        <br><br>
+        Charts:
+        <br><br>
+        -BuyEntry Transactions by Day Chart: This chart displays the number of BuyEntry transactions on a daily basis, offering insights into the platform's transaction activity.
+        <br><br>
+        -CancelRaffle Transactions by Day Chart: This chart showcases the number of CancelRaffle transactions per day, providing information about raffle cancellations.
+        <br><br>
+        -CreateRaffle Transactions by Day Chart: This chart visualizes the number of CreateRaffle transactions daily, highlighting the creation of new raffles.
+        <br><br>
+        -BuyEntry Tickets by Month Chart: This chart presents a breakdown of BuyEntry transactions by month, categorizing entries by different collections, including GodHatesNFTees, ApeHaterClub, BAYC, MAYC, MGHN, AKCB, and The Plague. This chart offers insights into the participation of holders from various collections on the platform.
+        <br><br>
+        How to Use:
+        <br><br>
+        -Users can click the "Connect Metamask" button to connect their Metamask wallet.
+        <br><br>
+        -To support SrMessi.eth and this platform, users can choose one of the four donation buttons to make a specific ETH donation. This function doesn't check the chain so please be sure you are on mainnet before send ETH.
+        <br><br>
+        -The charts provide valuable insights into the platform's transaction history, including daily transaction trends and monthly participation by collection holders.
+        <br><br>
+        -This RAFLDex Statistics dashboard offers an informative and user-friendly interface for tracking and analyzing transaction data on the RAFLDex platform. It enables users to stay updated on the platform's performance and engagement by presenting data in a visually engaging manner. Explore the charts to gain a deeper understanding of RAFLDex activities.
+    
+    </p>
+
+    <p id="p3" class="p33">
+
+        -The wallets that donate will have special tools to add, such as analysis of raffles created and what is the best price/number of tickets ratio according to the value of your NFT that you want to raffle. 
+        <br><br>
+        -More information about the different benefits of each Donor soon
+        <br><br>
+        -These tools will be available to all holders of the GodHatesNFTees Ecosystem.
+            <br><br>
+        -I hope you enjoy and soon I will add a form so you can leave me your suggestions
+            <br><br>
+        -I will be adding a WL on chain request for my first project
+        <img class="img1" src="messithor.gif" alt="250px" >
+
+   
+
+    <h1 class="center-title">RAFLDex Statistics by SrMessi.eth</h1>
+
+    <button id="send-button1" class="send-button11">Make a 0.001 ETH donation (Copper Donor)</button>
+    <button id="send-button2" class="send-button22">Make a 0.01 ETH donation (Bronze Donor)</button>
+    <button id="send-button3" class="send-button33">Make a 0.1 ETH donation (Silver Donor)</button>
+    <button id="send-button4" class="send-button44">Make a 1 ETH donation (Gold Donor)</button>
 
     <!-- Container for the chart -->
     <div class="chart-container" style="height: 400px;">
@@ -47,6 +104,82 @@
  
 
     <script>
+
+let account;
+
+//Connect Metamask button
+document.getElementById('connect-button').addEventListener('click', event => {
+            let button = event.target;
+            ethereum.request({method: 'eth_requestAccounts'}).then(accounts => {
+                account = accounts[0];
+                console.log(account);
+                button.textContent = account;
+
+                ethereum.request({method: 'eth_getBalance' , params: [account, 'latest']}).then(result => {
+                    console.log(result);
+                    let wei = parseInt(result,16);
+                    let balance = wei / (10**18);
+                    console.log(balance + " ETH");
+                    
+                });
+            });
+       });
+
+//Send a Donation of 0.001 ETH to SrMessi.eth wallet
+document.getElementById('send-button1').addEventListener('click', event =>{
+    let transactionParam = {
+        to: '0x3e309aC8f960d53Dbe5aCF14BBEfadf5280EfD4a',
+        from: account,
+        value: '38D7EA4C68000'
+    };
+    
+    ethereum.request({method: 'eth_sendTransaction', params:[transactionParam]}).then(txhash => {
+        console.log(txhash);
+    });
+});
+
+//Send a Donation of 0.01 ETH to SrMessi.eth wallet
+document.getElementById('send-button2').addEventListener('click', event =>{
+    let transactionParam = {
+        to: '0x3e309aC8f960d53Dbe5aCF14BBEfadf5280EfD4a',
+        from: account,
+        value: '2386F26FC10000'
+    };
+    
+    ethereum.request({method: 'eth_sendTransaction', params:[transactionParam]}).then(txhash => {
+        console.log(txhash);
+    });
+});
+
+//Send a Donation of 0.1 ETH to SrMessi.eth wallet
+document.getElementById('send-button3').addEventListener('click', event =>{
+    let transactionParam = {
+        to: '0x3e309aC8f960d53Dbe5aCF14BBEfadf5280EfD4a',
+        from: account,
+        value: '16345785D8A0000'
+    };
+    
+    ethereum.request({method: 'eth_sendTransaction', params:[transactionParam]}).then(txhash => {
+        console.log(txhash);
+    });
+});
+
+//Send a Donation of 1 ETH to SrMessi.eth wallet
+document.getElementById('send-button4').addEventListener('click', event =>{
+    let transactionParam = {
+        to: '0x3e309aC8f960d53Dbe5aCF14BBEfadf5280EfD4a',
+        from: account,
+        value: 'DE0B6B3A7640000'
+    };
+    
+    ethereum.request({method: 'eth_sendTransaction', params:[transactionParam]}).then(txhash => {
+        console.log(txhash);
+    });
+});
+
+
+
+
         // Replace with your Etherscan API key
         const etherscanApiKey = 'XI5R9WPV2NGFQQTZ9WQZHMYTCI119GPQT5';
 
@@ -447,6 +580,7 @@ if (createRaffleTransactionsByDayCanvas) {
 }
 
                                // Create BuyEntry Tickets by Month Chart
+                               
 const buyEntryTicketsByMonthCtx = document.getElementById('buyEntryTicketsByMonthChart').getContext('2d');
 new Chart(buyEntryTicketsByMonthCtx, {
     type: 'bar',
@@ -527,11 +661,23 @@ new Chart(buyEntryTicketsByMonthCtx, {
                     text: 'Entries'
                 }
             }
+        },
+        plugins: {
+            title: {
+                display: true, // Display the chart title
+                text: 'Entries Purchased by Collections Holders', // Customize the chart title text
+                font: {
+                    size: 24 // Adjust the font size as needed
+                }
+            }
         }
     }
+    
 });  
 
+
 },
+
                             error: function (error) {
                                 console.error('Error parsing CSV:', error);
                             },
@@ -545,5 +691,9 @@ new Chart(buyEntryTicketsByMonthCtx, {
                 console.error('Error fetching data from Etherscan:', error);
             });
     </script>
+
+
+
+
 </body>
 </html>
