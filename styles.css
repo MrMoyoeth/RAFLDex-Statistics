@@ -1,7 +1,3 @@
-/* Apply a background image and color to the body */
-
-
-
 body {
     background-image: url(pfp.png);
     background-size: cover;
