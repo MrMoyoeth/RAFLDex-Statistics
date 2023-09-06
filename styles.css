@@ -5,7 +5,7 @@
     body {
         background-image: url(pfp2.png);
         background-size: cover;
-       
+        background-size: auto; /* Adjust background size for better legibility */
     }
     
     h1 {
