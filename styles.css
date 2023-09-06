@@ -8,7 +8,6 @@
         background-repeat: no-repeat;
         background-size: auto; /* Adjust background size for better legibility */
     }
-    }
     
     h1 {
         font-size: 24px; /* Reduce title font size for mobile */
@@ -50,6 +49,13 @@
     }
 }
 
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* CSS rules for tablets */
+}
+
+@media (min-width: 1025px) {
+    /* CSS rules for desktop screens */
 
 
 body {
@@ -143,8 +149,8 @@ canvas {
     background: linear-gradient(to bottom,#763c28, #763c28);
     color: #ffffff;
     position: absolute;
-    bottom: -350px;
-    right: 800px;
+    bottom: -50px;
+    right: 1100px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -156,8 +162,8 @@ canvas {
     background: linear-gradient(to bottom, #B35D00, #B35D00);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 500px;
+    bottom: -50px;
+    right: 800px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -169,8 +175,8 @@ canvas {
     background: linear-gradient(to bottom, #C0C0C0, #C0C0C0);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 200px;
+    bottom: -50px;
+    right: 500px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -182,8 +188,8 @@ canvas {
     background: linear-gradient(to bottom, #FFD700, #FFD700);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 10px;
+    bottom: -50px;
+    right: 200px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -232,4 +238,4 @@ margin-top: -200px;
 margin-left: 950px;
  
     
-}
+}}
