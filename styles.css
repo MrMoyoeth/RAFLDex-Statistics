@@ -1,8 +1,8 @@
-@media (max-width: 768px) {
+@media (max-width: 560px) {
     /* CSS rules for screens up to 768px wide (typical mobile devices) */
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 560px) and (max-width: 760px) {
     /* CSS rules for tablets */
 }
 
