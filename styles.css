@@ -1,5 +1,5 @@
 /* Mobile styles */
-@media (max-width: 768px) {
+@media (max-width: 515px) {
     body {
         background-image: url(pfp2.png);
         background-size: contain;
@@ -60,7 +60,7 @@
     }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 516px) {
 
 body {
     size-adjust: auto;
