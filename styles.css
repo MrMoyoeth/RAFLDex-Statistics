@@ -4,8 +4,10 @@
 @media (max-width: 768px) {
     body {
         background-image: url(pfp2.png);
-        background-size: cover;
+        background-size:contain;
+        background-repeat: no-repeat;
         background-size: auto; /* Adjust background size for better legibility */
+    }
     }
     
     h1 {
