@@ -42,7 +42,7 @@
         left: 10px; /* Adjust text position on mobile */
         right: 10px; /* Adjust text position on mobile */
         bottom: 20px; /* Adjust text position on mobile */
-        top: auto; /* Reset top position for mobile */
+        top: 10px; /* Reset top position for mobile */
     }
 
     .img1 {
