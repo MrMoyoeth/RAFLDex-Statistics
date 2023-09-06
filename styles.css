@@ -49,10 +49,56 @@
     }
 }
 
-
-@media (min-width: 769px) and (max-width: 1024px) {
-    /* CSS rules for tablets */
+   /* CSS rules for tablets */
+@media (min-width: 769px) and (max-width: 1024px)  {
+    body {
+        background-image: url(pfp2.png);
+        background-size:contain;
+        background-repeat: no-repeat;
+        background-size: auto; /* Adjust background size for better legibility */
+    }
+    
+    h1 {
+        font-size: 24px; /* Reduce title font size for mobile */
+    }
+    
+    .chart-container {
+        width: 100%; /* Make chart containers full width on mobile */
+        margin: 10px 0; /* Adjust margin for spacing on mobile */
+        height: auto; /* Let the charts determine their own height */
+    }
+    
+    /* Adjust button positions on mobile */
+    .send-button11 { right: 10px; }
+    .send-button22 { right: 10px; }
+    .send-button33 { right: 10px; }
+    .send-button44 { right: 10px; }
+    
+    .p1, .p33 {
+        font-size: 16px; /* Reduce text font size for mobile */
+        left: 10px; /* Adjust text position on mobile */
+        right: 10px; /* Adjust text position on mobile */
+        bottom: 20px; /* Adjust text position on mobile */
+        top: auto; /* Reset top position for mobile */
+    }
+    
+    .img1 {
+        margin-top: 10px; /* Adjust image margin on mobile */
+        margin-left: auto; /* Center image horizontally on mobile */
+        margin-right: auto; /* Center image horizontally on mobile */
+    }
+    
+    /* Adjust button styles for better legibility on mobile */
+    .connect-button1 {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        margin-top: 10px; /* Add space between button and text on mobile */
+    }
 }
+ 
+
 
 @media (min-width: 1025px) {
     /* CSS rules for desktop screens */
@@ -149,8 +195,8 @@ canvas {
     background: linear-gradient(to bottom,#763c28, #763c28);
     color: #ffffff;
     position: absolute;
-    bottom: -50px;
-    right: 1100px;
+    bottom: -150px;
+    right: 900px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -162,8 +208,8 @@ canvas {
     background: linear-gradient(to bottom, #B35D00, #B35D00);
     color: #ffffff;
     position: absolute;
-    bottom: -50px;
-    right: 800px;
+    bottom: -150px;
+    right: 600px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -175,8 +221,8 @@ canvas {
     background: linear-gradient(to bottom, #C0C0C0, #C0C0C0);
     color: #ffffff;
     position: absolute;
-    bottom: -50px;
-    right: 500px;
+    bottom: -150px;
+    right: 300px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -188,8 +234,8 @@ canvas {
     background: linear-gradient(to bottom, #FFD700, #FFD700);
     color: #ffffff;
     position: absolute;
-    bottom: -50px;
-    right: 200px;
+    bottom: -150px;
+    right: 100px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
