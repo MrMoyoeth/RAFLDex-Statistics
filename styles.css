@@ -50,7 +50,7 @@
 }
 
    /* CSS rules for tablets */
-@media (min-width: 769px) and (max-width: 1024px)  {
+@media (min-width: 769px) and (max-width: 1069px)  {
     body {
         background-image: url(pfp2.png);
         background-size:contain;
@@ -100,7 +100,7 @@
  
 
 
-@media (min-width: 1025px) {
+@media (min-width: 1070px) {
     /* CSS rules for desktop screens */
 
 
