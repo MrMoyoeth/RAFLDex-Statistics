@@ -38,7 +38,7 @@
     }
 
     .p1, .p33 {
-        font-size: 16px; /* Reduce text font size for mobile */
+        font-size: 15px; /* Reduce text font size for mobile */
         left: 10px; /* Adjust text position on mobile */
         right: 10px; /* Adjust text position on mobile */
         bottom: 20px; /* Adjust text position on mobile */
