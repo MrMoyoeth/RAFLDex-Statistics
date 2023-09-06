@@ -1,3 +1,66 @@
+/* Mobile styles */
+@media (max-width: 768px) {
+    body {
+        background-image: url(pfp2.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-color: #101419;
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        height: auto; /* Remove fixed height for better responsiveness */
+    }
+
+    h1 {
+        font-size: 24px; /* Reduce title font size for mobile */
+        margin: 0; /* Reset margin for mobile */
+        padding: 10px; /* Add padding for better spacing */
+    }
+
+    .chart-container {
+        width: 100%; /* Make chart containers full width on mobile */
+        margin: 10px 0; /* Adjust margin for spacing on mobile */
+        height: auto; /* Let the charts determine their own height */
+    }
+
+    /* Adjust button positions on mobile */
+    .send-button11,
+    .send-button22,
+    .send-button33,
+    .send-button44 {
+        position: relative; /* Reset button positions for mobile */
+        margin-top: 10px; /* Add space between buttons on mobile */
+        right: auto; /* Reset right position for mobile */
+    }
+
+    .p1, .p33 {
+        font-size: 16px; /* Reduce text font size for mobile */
+        left: 10px; /* Adjust text position on mobile */
+        right: 10px; /* Adjust text position on mobile */
+        bottom: 20px; /* Adjust text position on mobile */
+        top: auto; /* Reset top position for mobile */
+    }
+
+    .img1 {
+        margin-top: 10px; /* Adjust image margin on mobile */
+        margin-left: auto; /* Center image horizontally on mobile */
+        margin-right: auto; /* Center image horizontally on mobile */
+    }
+
+    .connect-button1 {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        margin-top: 10px; /* Add space between button and text on mobile */
+    }
+}
+
+
 
 body {
     size-adjust: auto;
