@@ -146,8 +146,8 @@ canvas {
     background: linear-gradient(to bottom,#763c28, #763c28);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 1000px;
+    bottom: -350px;
+    right: 800px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -160,7 +160,7 @@ canvas {
     color: #ffffff;
     position: absolute;
     bottom: -150px;
-    right: 700px;
+    right: 500px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -173,7 +173,7 @@ canvas {
     color: #ffffff;
     position: absolute;
     bottom: -150px;
-    right: 400px;
+    right: 200px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
@@ -186,7 +186,7 @@ canvas {
     color: #ffffff;
     position: absolute;
     bottom: -150px;
-    right: 100px;
+    right: 10px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
