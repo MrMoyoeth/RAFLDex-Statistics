@@ -60,7 +60,7 @@
     }
 }
 
-
+@media (min-width: 769px) {
 
 body {
     size-adjust: auto;
@@ -241,4 +241,4 @@ margin-top: 3%;
 margin-left: 40%;
  
     
-}
+}}
