@@ -235,7 +235,7 @@ canvas {
     color: #ffffff;
     position: absolute;
     bottom: -150px;
-    right: 100px;
+    right: 0px;
     width: 250px; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
