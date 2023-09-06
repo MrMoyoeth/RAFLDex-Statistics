@@ -4,7 +4,8 @@
 @media (max-width: 768px) {
     body {
         background-image: url(pfp2.png);
-        background-size: auto; /* Adjust background size for better legibility */
+        background-size: cover;
+       
     }
     
     h1 {
