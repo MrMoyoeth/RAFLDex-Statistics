@@ -50,7 +50,7 @@
 }
 
    /* CSS rules for tablets */
-@media (min-width: 769px) and (max-width: 1069px)  {
+@media (min-width: 769px) and (max-width: 1023px)  {
     body {
         background-image: url(pfp2.png);
         background-size:contain;
@@ -100,11 +100,15 @@
  
 
 
-@media (min-width: 1070px) {
+@media (min-width: 1024px) {
     /* CSS rules for desktop screens */
 
 
+
+
+
 body {
+    size-adjust: auto;
     background-image: url(pfp2.png);
     flood-opacity: 50%;
     background-size: cover;
@@ -124,7 +128,7 @@ body {
 h1 {
    
     background-size:contain; 
-    height: 100px;
+    height: 8.5%;
     background-image: url(GHNFT_banner2.png);
     color: greenyellow;
     text-shadow: 1.5px 1.5px;
@@ -132,21 +136,22 @@ h1 {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-style: italic;
     text-align: center;
-    font-size: 36px;
-    padding: 20px;
+    font-size: 300%;
+    padding: 1.5%;
     margin: 0;
+    margin-top: 1%;
 }
 
 /* Style the container for charts */
 .chart-container {
     background-color: #1c2533;
-    margin: 20px; /* Adjust margin for spacing */
+    margin: 1%; /* Adjust margin for spacing */
     width: 30%; /* Set the desired width for the charts */
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    border: 5px solid silver;
+    border-radius: 5%;
     overflow: hidden;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-    height: 1600px; /* Set the desired height for the charts (doubled) */
+    box-shadow: 0% 4% 6% rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    height: 1400%; /* Set the desired height for the charts (doubled) */
     display: flex; /* Use flex display */
     flex-direction: column; /* Stack charts vertically from top to bottom */
     align-items: flex-start; /* Align charts to the left */
@@ -156,7 +161,7 @@ h1 {
 /* Style the canvas elements inside the chart containers */
 canvas {
     background-color: #1c2533;
-    border-radius: 10px;
+    border-radius: 10%;
     width: 100%;
 }
 
@@ -167,26 +172,22 @@ canvas {
 .send-button33,
 .send-button44 {
     display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 1% 2%;
+    font-size: 86%;
     font-weight: bold;
     text-align: center;
     text-decoration: none;
     border: none;
-    border-radius: 5px;
+    border-radius: 25%;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .connect-button1 {
-    background:#007BFF;
-    border-color: chartreuse;
-    font: bold;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: #101419;
-    color: #ffffff;
-    border-style: solid;
-    padding: 1px;
+background-color: black;
+margin-top: 1%;
+margin-left: 0.5%;
+color: greenyellow;      
 }
 
 
@@ -195,9 +196,9 @@ canvas {
     background: linear-gradient(to bottom,#763c28, #763c28);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 900px;
-    width: 250px; /* Set a fixed width for the button */
+    bottom: -30%;
+    right: 50%;
+    width: 12.5%; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
     text-overflow: ellipsis; /* Add an ellipsis for overflow */
@@ -208,9 +209,9 @@ canvas {
     background: linear-gradient(to bottom, #B35D00, #B35D00);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 600px;
-    width: 250px; /* Set a fixed width for the button */
+    bottom: -30%;
+    right: 36.5%;
+    width: 12.5%; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
     text-overflow: ellipsis; /* Add an ellipsis for overflow */
@@ -221,9 +222,9 @@ canvas {
     background: linear-gradient(to bottom, #C0C0C0, #C0C0C0);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 300px;
-    width: 250px; /* Set a fixed width for the button */
+    bottom: -30%;
+    right: 23%;
+    width: 12.5%; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
     text-overflow: ellipsis; /* Add an ellipsis for overflow */
@@ -234,9 +235,9 @@ canvas {
     background: linear-gradient(to bottom, #FFD700, #FFD700);
     color: #ffffff;
     position: absolute;
-    bottom: -150px;
-    right: 0px;
-    width: 250px; /* Set a fixed width for the button */
+    bottom: -30%;
+    right: 9.5%;
+    width: 12.5%; /* Set a fixed width for the button */
     white-space: normal; /* Allow text to wrap within the width */
     overflow: hidden; /* Hide text that exceeds the width */
     text-overflow: ellipsis; /* Add an ellipsis for overflow */
@@ -259,29 +260,29 @@ canvas {
     font-style: normal;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     position: absolute;
-    bottom: 100px;
-    top: 175px;
-    right: 50px;
-    left: 700px;
+    bottom: 100%;
+    top: 25%;
+    right: 5%;
+    left: 35%;
     box-sizing: content-box;
 }
 
 .p33 {
-  
+    margin: 1%;
     font-size: x-large;
     position: absolute;
-    bottom: 100px;
-    top: 1150px;
-    right: 50px;
-    left: 700px;
+    bottom: -15%;
+    top: 130%;
+    right: 5%;
+    left: 35%;
     box-sizing: content-box;
     color:yellow;
     text-shadow: #101419 1px 1px;
 }
 
 .img1 {
-margin-top: -200px;
-margin-left: 950px;
+margin-top: -35%;
+margin-left: 100%;
  
     
 }}
