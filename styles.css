@@ -7,6 +7,7 @@ h1 {
    
     
     background-image: url(GHNFT_banner2.png);
+    background-repeat: no-repeat;
     color: greenyellow;
     text-shadow: 1.5px 1.5px;
     font: bolder;
