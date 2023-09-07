@@ -1,89 +1,11 @@
-/* Mobile styles */
-@media (max-width: 768px) {
-    body {
-        background-image: url(pfp2.png);
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-color: #101419;
-        color: #ffffff;
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        height: auto; /* Remove fixed height for better responsiveness */
-    }
-
-    h1 {
-        font-size: 24px; /* Reduce title font size for mobile */
-        margin: 0; /* Reset margin for mobile */
-        padding: 10px; /* Add padding for better spacing */
-    }
-
-    .chart-container {
-        width: 100%; /* Make chart containers full width on mobile */
-        margin: 10px 0; /* Adjust margin for spacing on mobile */
-        height: auto; /* Let the charts determine their own height */
-    }
-
-    /* Adjust button positions on mobile */
-    .send-button11,
-    .send-button22,
-    .send-button33,
-    .send-button44 {
-        position: relative; /* Reset button positions for mobile */
-        margin-top: 10px; /* Add space between buttons on mobile */
-        right: auto; /* Reset right position for mobile */
-    }
-
-    .p1, .p33 {
-        font-size: 15px; /* Reduce text font size for mobile */
-        left: 10px; /* Adjust text position on mobile */
-        right: 10px; /* Adjust text position on mobile */
-        bottom: 20px; /* Adjust text position on mobile */
-        top: 10px; /* Reset top position for mobile */
-    }
-
-    .img1 {
-        margin-top: 10px; /* Adjust image margin on mobile */
-        margin-left: auto; /* Center image horizontally on mobile */
-        margin-right: auto; /* Center image horizontally on mobile */
-    }
-
-    .connect-button1 {
-        padding: 10px 20px;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 5px;
-        margin-top: 10px; /* Add space between button and text on mobile */
-    }
-}
-
-@media (min-width: 769px) {
-
 body {
-    size-adjust: auto;
-    background-image: url(pfp2.png);
-    flood-opacity: 50%;
-    background-size: cover;
-    background-color: #101419;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    flex-direction: column; /* Stack content vertically from top to bottom */
-    justify-content: flex-start; /* Align content to the top */
-    align-items: flex-start; /* Align content to the left */
-    height: 100vh;
-    
-}
+    background-color: black;
+ }
 
 /* Style the page title */
 h1 {
    
-    background-size:contain; 
-    height: 8.5%;
+    
     background-image: url(GHNFT_banner2.png);
     color: greenyellow;
     text-shadow: 1.5px 1.5px;
@@ -92,24 +14,22 @@ h1 {
     font-style: italic;
     text-align: center;
     font-size: 300%;
-    padding: 1.5%;
-    margin: 0;
-    margin-top: 1%;
+    background-size:contain; 
+    padding: 2.5%;
+   
+    
+    
 }
 
 /* Style the container for charts */
 .chart-container {
     background-color: #1c2533;
-    margin: 1%; /* Adjust margin for spacing */
-    width: 30%; /* Set the desired width for the charts */
-    border: 5px solid silver;
+    border: 5px solid greenyellow;
+    margin: 1%;
+    padding: 6.9%;
     border-radius: 5%;
     overflow: hidden;
     box-shadow: 0% 4% 6% rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-    height: 1400%; /* Set the desired height for the charts (doubled) */
-    display: flex; /* Use flex display */
-    flex-direction: column; /* Stack charts vertically from top to bottom */
-    align-items: flex-start; /* Align charts to the left */
     justify-content: center; /* Center charts horizontally within the container */
 }
 
@@ -118,85 +38,63 @@ canvas {
     background-color: #1c2533;
     border-radius: 10%;
     width: 100%;
+   
 }
 
 
-/* Common button styles */
-.send-button11,
-.send-button22,
-.send-button33,
-.send-button44 {
+.rafldex-button1,
+.SrB-button1,
+.GHN-button1 {
+ 
     display: inline-block;
-    padding: 1% 2%;
-    font-size: 86%;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    border: none;
-    border-radius: 25%;
+    background: transparent;
+    border: transparent;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Use :hover pseudo-class for the hover effect */
+.SrB-button1:hover {
+    cursor: hand;
+}
+
+
+/* Use :hover pseudo-class for the hover effect */
+.GHN-button1:hover {
+    cursor: hand;
+}
+
+/* Use :hover pseudo-class for the hover effect */
+.rafldex-button1:hover {
+    cursor: hand;
+}
+
+
+.connect-button1:hover {
+    border-style:double;
+    cursor: hand;
 }
 
 .connect-button1 {
-background-color: black;
-margin-top: 1%;
-margin-left: 0.5%;
-color: greenyellow;      
+    position:absolute;
+    display: inline-block;
+    top: 3%;
+    left: 80%;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    cursor: pointer;
+    background-color: black;
+    color: greenyellow;  
+    border-radius: 30%;
+    border-width: 5px;
+    border-color: greenyellow;
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add ellipsis for text overflow */
+    
+    
 }
 
 
-/* Button 1 styles */
-.send-button11 {
-    background: linear-gradient(to bottom,#763c28, #763c28);
-    color: #ffffff;
-    position: absolute;
-    bottom: -110%;
-    right: 50%;
-    width: 12.5%; /* Set a fixed width for the button */
-    white-space: normal; /* Allow text to wrap within the width */
-    overflow: hidden; /* Hide text that exceeds the width */
-    text-overflow: ellipsis; /* Add an ellipsis for overflow */
-}
-
-/* Button 2 styles */
-.send-button22 {
-    background: linear-gradient(to bottom, #B35D00, #B35D00);
-    color: #ffffff;
-    position: absolute;
-    bottom: -110%;
-    right: 36.5%;
-    width: 12.5%; /* Set a fixed width for the button */
-    white-space: normal; /* Allow text to wrap within the width */
-    overflow: hidden; /* Hide text that exceeds the width */
-    text-overflow: ellipsis; /* Add an ellipsis for overflow */
-}
-
-/* Button 3 styles */
-.send-button33 {
-    background: linear-gradient(to bottom, #C0C0C0, #C0C0C0);
-    color: #ffffff;
-    position: absolute;
-    bottom: -110%;
-    right: 23%;
-    width: 12.5%; /* Set a fixed width for the button */
-    white-space: normal; /* Allow text to wrap within the width */
-    overflow: hidden; /* Hide text that exceeds the width */
-    text-overflow: ellipsis; /* Add an ellipsis for overflow */
-}
-
-/* Button 4 styles */
-.send-button44 {
-    background: linear-gradient(to bottom, #FFD700, #FFD700);
-    color: #ffffff;
-    position: absolute;
-    bottom: -110%;
-    right: 9.5%;
-    width: 12.5%; /* Set a fixed width for the button */
-    white-space: normal; /* Allow text to wrap within the width */
-    overflow: hidden; /* Hide text that exceeds the width */
-    text-overflow: ellipsis; /* Add an ellipsis for overflow */
-}
 
 .p1 {
     font-size: x-large;
@@ -214,31 +112,19 @@ color: greenyellow;
     font:caption;
     font-style: normal;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    position: absolute;
-    bottom: 100%;
-    top: 25%;
-    right: 5%;
-    left: 35%;
     box-sizing: content-box;
 }
 
 .p33 {
     
-    margin: 1%;
+  
     font-size: x-large;
-    position: absolute;
-    bottom: -15%;
-    top: 215%;
-    right: 5%;
-    left: 35%;
     box-sizing: content-box;
     color:yellow;
     text-shadow: #101419 1px 1px;
 }
 
 .img1 {
-margin-top: 3%;
-margin-left: 40%;
- 
-    
-}}
+    margin-left: 41.5%;
+}
+
