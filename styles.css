@@ -83,10 +83,8 @@ canvas {
 }
 
 .connect-button1 {
-    position:absolute;
+   
     display: inline-block;
-    top: 3%;
-    left: 80%;
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
     cursor: pointer;
