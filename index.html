@@ -182,6 +182,7 @@ document.getElementById('SrB-button').addEventListener('click', event => {
         let buyEntryThePlagueHoldersCount = {};
         let sumsByDay = {};
         let sumsByDayInEther = {};
+        let buyEntrySappySealsHoldersCount = {};
         
 
 
@@ -343,6 +344,7 @@ fetch('ghn.csv')
                 const mghnAddresses = new Set();
                 const akcbAddresses = new Set();
                 const theplagueAddresses = new Set();
+                const ssAddresses = new Set ();
 
                 results.data.forEach((row) => {
                     const ghnAddress = row['GHNHolderAddress']?.substring(0, 42)?.toLowerCase();
@@ -352,6 +354,7 @@ fetch('ghn.csv')
                     const mghnAddress = row['MGHNHolderAddress']?.substring(0, 42)?.toLowerCase();
                     const akcbAddress = row['AKCBHolderAddress']?.substring(0, 42)?.toLowerCase();
                     const theplagueAddress = row['ThePlagueHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const ssAddress = row['SSHolderAddress']?.substring(0, 42)?.toLowerCase();
                     if (ghnAddress) {
                         ghnAddresses.add(ghnAddress);
                         console.log(`Extracted GHN Address: ${ghnAddress}`);
@@ -384,6 +387,13 @@ fetch('ghn.csv')
                         theplagueAddresses.add(theplagueAddress);
                         console.log(`Extracted The Plague Address: ${theplagueAddress}`);
                     }
+
+                        if (ssAddress) {
+                        ssAddresses.add(ssAddress);
+                        console.log(`Extracted The Plague Address: ${ssAddress}`);
+                    }
+
+                    
                 });
 
                 transactions.forEach((transaction) => {
@@ -399,6 +409,8 @@ fetch('ghn.csv')
                         const isMGHN = mghnAddresses.has(address);
                         const isAKCB = akcbAddresses.has(address);
                         const isThePlague = theplagueAddresses.has(address);
+                        const isSS = ssAddresses.has(address);
+                        
 
                         if (isGHN) {
                             // Initialize the count for this month if it doesn't exist
@@ -461,6 +473,15 @@ fetch('ghn.csv')
                             buyEntryThePlagueHoldersCount[month]++; // Increment the count for this month
                             console.log(`Address: ${address} is a The Plague Holder`);
                         } 
+
+                        if (isSS) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntrySappySealsHoldersCount[month]) {
+                                buyEntrySappySealsHoldersCount[month] = 0;
+                            }
+                            buyEntrySappySealsHoldersCount[month]++; // Increment the count for this month
+                            console.log(`Address: ${address} is a Sappy Seals Holder`);
+                        } 
                      
                                                 
                     }
@@ -483,6 +504,7 @@ fetch('ghn.csv')
                 console.log('buyEntryMGHNHoldersCount:', buyEntryMGHNHoldersCount);
                 console.log('buyEntryAKCBHoldersCount:', buyEntryAKCBHoldersCount);
                 console.log('buyEntryThePlagueHoldersCount:', buyEntryThePlagueHoldersCount);
+                 console.log('buyEntryThePlagueHoldersCount:', buyEntrySappySealsHoldersCount);
 
                 
                 // Create BuyEntry Transactions by Day Chart
@@ -753,6 +775,14 @@ new Chart(buyEntryTicketsByMonthCtx, {
                 data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryThePlagueHoldersCount[month] || 0),
                 backgroundColor: 'rgba(72, 251, 62, 0.8)',
                 borderColor: 'rgba(72, 251, 62, 0.8)',
+                borderWidth: 1  
+            },
+
+            {
+                label: 'SappySeals',
+                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntrySappySealsCount[month] || 0),
+                backgroundColor: 'rgba(201, 128, 0, 0.8)',
+                borderColor: 'rgba(201, 128, 0, 0.8)',
                 borderWidth: 1  
             },
                 ]
