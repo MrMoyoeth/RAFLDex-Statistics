@@ -225,7 +225,8 @@ transactions.forEach((transaction) => {
   const valueInWei = parseInt(transaction.value);
   const valueInEther = valueInWei / 1e18; // Convert wei to ether
 
-  if (sumsByDayInEther[dayKey]) {
+if (transaction.input.startsWith(buyEntrySignature)) 
+if (sumsByDayInEther[dayKey]) {
     sumsByDayInEther[dayKey] += valueInEther;
   } else {
     sumsByDayInEther[dayKey] = valueInEther;
