@@ -18,16 +18,17 @@
 
 
 
-
 </head>
 <body>
 
     <button id="rafldex-button" class="rafldex-button1"><img src="https://www.rafldex.io/_next/static/media/rafldex-banner-logo.c5c4ed98.svg" width="110"></button>
       
     <button id="GHN-button" class="GHN-button1"><img src="ghnicon.png" width="60" height="60"></button>
-    <button id="SrB-button" class="SrB-button1" ><img src="banano.png" width="60" height="60">
-    </button>
-
+    <button id="SrB-button" class="SrB-button1" ><img src="banano.png" width="60" height="60"></button>
+    <button id="AHC-button" class="AHC-button1"><img src="AHC.png"  width="60" height="60"></button>
+    <button id="dvda-button" class="dvda-button1"><img src="DVDA.png"  width="60" height="60"></button>
+    <button id="RB-button" class="RB-button1"><img src="rb.png"  width="60" height="60"></button>
+    <button id="mutant-button" class="mutant-button1"><img src="mutant.png"  width="60" height="60"></button>
     <button id="connect-button" class="connect-button1"><img src="https://metaschool.so/articles/wp-content/uploads/2022/11/metamaskfox.png" width="10%"></button>
 
 
@@ -143,6 +144,30 @@ document.getElementById('SrB-button').addEventListener('click', event => {
     window.open("https://opensea.io/collection/srbananos", "_blank");
 });
 
+// Add an event listener to the button
+document.getElementById('AHC-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/apehaterclub", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('dvda-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/dvda", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('RB-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/rottenbananos", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('mutant-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/mutant-godhatesnftees", "_blank");
+});
+
 
 
 
@@ -153,7 +178,7 @@ document.getElementById('SrB-button').addEventListener('click', event => {
 
         // Specify the contract addresses
         const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92';
-        const tokenContractAddress = '0xe6d48bf4ee912235398b96e16db6f310c21e82cb';
+        const tokenContractAddress = '0xc084a29dd0c9436568435938b1c6c5af4f5c035f';
 
         // Function signature of the "buyEntry" function
         const buyEntrySignature = '0xb26a78c5'; // Replace with the actual function signature
