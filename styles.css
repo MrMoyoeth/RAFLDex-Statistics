@@ -13,10 +13,14 @@ h1 {
     font: bolder;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-style: italic;
-    text-align: center;
+    text-align-last: initial;
     font-size: 300%;
-    background-size:contain; 
-    padding: 2.5%;
+    background-size:cover; 
+    padding: 10.5%;
+    display: flex; /* Use flexbox to vertically center the text */
+   align-items: center;
+   justify-content: center;
+   padding-top: calc(var(--header-height) - 1.2rem);
    
     
     
@@ -126,6 +130,7 @@ canvas {
 }
 
 .img1 {
-    margin-left: 41.5%;
+    margin-left: 30.5%;
 }
+
 
