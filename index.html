@@ -13,6 +13,8 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <!-- Link the custom CSS file -->
     <link rel="stylesheet" href="styles.css">
 
@@ -70,6 +72,14 @@
         <canvas id="ethSpentPerDayChart"></canvas>
     </div>
 
+    <!-- Add a 3px separation -->
+    <div style="height: 3px;"></div>
+
+      <!-- Container for the Create Raffle chart -->
+      <div class="chart-container" style="height: 400px;">
+        <canvas id="dummySpentPerDayChart"></canvas>
+    </div>
+
    
     
         <!-- Add a 3px separation -->
@@ -78,6 +88,15 @@
     <!-- Container for the Create Raffle chart -->
     <div class="chart-container" style="height: 400px;">
         <canvas id="createRaffleChart"></canvas>
+    </div>
+
+
+    <!-- Add a 3px separation -->
+    <div style="height: 3px;"></div>
+
+     <!-- Container for the Create Raffle chart -->
+     <div class="chart-container" style="height: 400px;">
+        <canvas id="drawnRaffleChart"></canvas>
     </div>
 
     <!-- Add a 3px separation -->
@@ -107,23 +126,6 @@ let account;
 
 
 
-//Connect Metamask button
-document.getElementById('connect-button').addEventListener('click', event => {
-            let button = event.target;
-            ethereum.request({method: 'eth_requestAccounts'}).then(accounts => {
-                account = accounts[0];
-               console.log(account);
-               button.textContent = account;
-
-                ethereum.request({method: 'eth_getBalance' , params: [account, 'latest']}).then(result => {
-                    console.log(result);
-                    let wei = parseInt(result,16);
-                    let balance = wei / (10**18);
-                    console.log(balance + " ETH");
-                    
-                });
-            });
-       });
 
 
 
@@ -173,11 +175,8 @@ document.getElementById('mutant-button').addEventListener('click', event => {
 
 
 
-
-
-
         // Replace with your Etherscan API key
-        const etherscanApiKey = 'XI5R9WPV2NGFQQTZ9WQZHMYTCI119GPQT5';
+        const etherscanApiKey = '5W8M3RM6HVZ5Z4NDSMRYBMHP95UVWHQMUP';
 
         // Specify the contract addresses
         const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92';
@@ -194,14 +193,28 @@ document.getElementById('mutant-button').addEventListener('click', event => {
         // Function signatures to filter for the new chart
         const createRaffleSignatures = ['0xcf482ee9', '0x01a6e623', '0xead5c7bd'];
 
+        const setWinnerRaffleSignature = ['0x88ec392c'];
+
+        const NFTTransferIDSignature = ['0x7e9ab850b8ae5bd2e5fba4accceb80d63e90bcb89852d7cae476cd917f25b25d'];
+
         // Construct the Etherscan API URL to fetch transactions
         const apiUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddress}&apikey=${etherscanApiKey}`;
 
                 // Construct the Etherscan API URL to fetch transactions
                 const apiUrlV2 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
 
-        // Construct the Etherscan API URL to fetch token balances
-        const tokenApiUrl = `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${tokenContractAddress}&apikey=${etherscanApiKey}`;
+                const apiDummyUrl = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddress}&apikey=${etherscanApiKey}`;
+
+                const apiDummyUrlV2 = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+                
+                const apiNFT = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddress}&apikey=${etherscanApiKey}`;
+
+                // Define the API URL
+        const apiLogsUrl = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddress}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
+
+
+
+       
         
         let buyEntryTransactionsByDay = {};
         let buyEntryTicketsByMonth = {};
@@ -231,6 +244,100 @@ document.getElementById('mutant-button').addEventListener('click', event => {
         let buyEntryTotalEntriesByDayV2 = {};
         let createRaffleTransactionsByDayV2 = {};
         let cancelRaffleTransactionsByDayV2 = {};
+        let setWinnerRaffleByDayV2 = {};
+        
+        let sumsByDayInDummyv2 = {};
+        
+        
+        
+        function openCustomModal(message, onYesClick, onNoClick) {
+  const modalContainer = document.createElement('div');
+  modalContainer.classList.add('custom-modal-container');
+
+  const modal = document.createElement('div');
+  modal.classList.add('custom-modal');
+
+  const modalMessage = document.createElement('p');
+  modalMessage.textContent = message;
+
+  const yesButton = document.createElement('button');
+  yesButton.textContent = 'Yes';
+  yesButton.onclick = () => {
+    document.body.removeChild(modalContainer);
+    onYesClick();
+  };
+
+  const noButton = document.createElement('button');
+  noButton.textContent = 'No';
+  noButton.onclick = () => {
+    document.body.removeChild(modalContainer);
+    onNoClick();
+  };
+
+  modal.appendChild(modalMessage);
+  modal.appendChild(yesButton);
+  modal.appendChild(noButton);
+
+  modalContainer.appendChild(modal);
+
+  // Prepend modalContainer to the body to show it at the top
+  document.body.insertBefore(modalContainer, document.body.firstChild);
+}
+
+
+// Connect Metamask button
+document.getElementById('connect-button').addEventListener('click', async (event) => {
+  let button = event.target;
+  try {
+    // Request accounts from MetaMask
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    const account = accounts[0];
+    console.log(account);
+    button.textContent = account;
+
+    // Construct the Etherscan API URL to fetch token balances
+    const url = `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${tokenContractAddress}&address=${account}&tag=latest&apikey=${etherscanApiKey}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    // Check if balanceWei should be defined here
+    const balanceWei = parseInt(data.result);
+
+    if (balanceWei > 0) {
+      // Show a custom modal for VIP access
+      openCustomModal(
+        'Congrats! You can access VIP RaflDex Information. Click "Yes" to enter',
+        () => {
+          // User clicked "Yes," handle accordingly
+          window.location.href = 'index7.html';
+        },
+        () => {
+          // User clicked "No," handle accordingly
+        }
+      );
+    } else {
+      // Show a custom modal for getting DVDA The Cult
+      openCustomModal(
+        'Get a DVDA The Cult for VIP information. Click "Yes" to visit OpenSea collection.',
+        () => {
+          // User clicked "Yes," handle accordingly
+          window.open('https://opensea.io/collection/dvda', '_blank');
+        },
+        () => {
+          // User clicked "No," handle accordingly
+        }
+      );
+    }
+  } catch (error) {
+    console.error('Error connecting to MetaMask:', error);
+  }
+});
+
+
+
+
+        
 
 
 
@@ -265,6 +372,55 @@ document.getElementById('mutant-button').addEventListener('click', event => {
                     console.log(transactions)
 
 
+                // Fetch addresses of BuyEntry transactions
+                const buyEntryAddresses = transactions
+                    .filter((transaction) => transaction.input.startsWith(buyEntrySignature))
+                    .map((transaction) => transaction.from.toLowerCase()); // Convert addresses to lowercase for case-insensitive comparison
+                
+                 
+
+                console.log('Addresses obtained by buyEntrySignature:', buyEntryAddresses);
+
+
+                                      // Process transactions and group by day for BuyEntry chart
+                                
+                                      transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+                    if (transaction.input.startsWith(buyEntrySignature)) {
+                        if (buyEntryTransactionsByDayV2[day]) {
+                            buyEntryTransactionsByDayV2[day]++;
+                        } else {
+                            buyEntryTransactionsByDayV2[day] = 1;
+                        }
+                    }
+                });
+
+
+                                 // Process transactions and sum _numberEntries for BuyEntry chart
+    
+    transactions.forEach((transaction) => {
+        const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+        const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+        if (transaction.input.startsWith(buyEntrySignature)) {
+            // Decode the input data to get _numberEntries
+            const inputData = transaction.input.substring(10); // Remove the function signature
+            const web3 = new Web3();
+            const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
+
+            // Extract _numberEntries and sum it up
+            const numberEntries = parseInt(decodedData[1]);
+            
+            if (buyEntryTotalEntriesByDayV2[day]) {
+                buyEntryTotalEntriesByDayV2[day] += numberEntries;
+            } else {
+                buyEntryTotalEntriesByDayV2[day] = numberEntries;
+            }
+        }
+    });
+
                     
 
                     
@@ -289,66 +445,66 @@ if (sumsByDayInEtherV2[dayKey]) {
 
 console.log('Sums per day in ether:', sumsByDayInEtherV2);
 
-                    
 
-                // Fetch addresses of BuyEntry transactions
-                const buyEntryAddresses = transactions
-                    .filter((transaction) => transaction.input.startsWith(buyEntrySignature))
-                    .map((transaction) => transaction.from.toLowerCase()); // Convert addresses to lowercase for case-insensitive comparison
-                
-                 
-
-                console.log('Addresses obtained by buyEntrySignature:', buyEntryAddresses);
+// Initialize an object to store sums by day
 
 
-                                // Process transactions and group by day for BuyEntry chart
-                                
-                transactions.forEach((transaction) => {
+// Make an HTTP GET request to the API
+fetch(apiDummyUrlV2)
+  .then((dresponse) => dresponse.json())
+  .then((ddatav2) => {
+    // Process the data returned by the API
+    console.log('ddatav2', ddatav2);
+
+    // Extract value data from the transactions
+    const dtransactions = ddatav2.result;
+
+    console.log('dtransaction v2', dtransactions);
+    
+    // Iterate through transactions and retrieve the value data
+    dtransactions.forEach((transaction) => {
+      const timestamp = parseInt(transaction.timeStamp);
+      const date = new Date(timestamp * 1000); // Convert timestamp to Date object
+      const dayKey = date.toISOString().split('T')[0]; // Get the YYYY-MM-DD part as the key
+
+      const valueInWeiv2 = parseInt(transaction.value);
+      const valueInDummyv2 = valueInWeiv2 / 1e18; // Convert wei to ether
+
+           
+        if (sumsByDayInDummyv2[dayKey]) {
+          sumsByDayInDummyv2[dayKey] += valueInDummyv2;
+        } else {
+          sumsByDayInDummyv2[dayKey] = valueInDummyv2;
+        }
+      
+
+    });
+
+    // Log the sumsByDayInDummy object outside the loop
+    console.log('Sums per day in Dummy:v2', sumsByDayInDummyv2);
+  })
+  .catch((error) => {
+    console.error('Error fetching data from Etherscan:', error);
+  });
+
+                               // Process transactions and group by day for CreateRaffle chart
+               
+                               transactions.forEach((transaction) => {
                     const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
                     const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
 
-                    if (transaction.input.startsWith(buyEntrySignature)) {
-                        if (buyEntryTransactionsByDayV2[day]) {
-                            buyEntryTransactionsByDayV2[day]++;
+                    if (createRaffleSignatures.some((signature) => transaction.input.includes(signature))) {
+                        if (createRaffleTransactionsByDayV2[day]) {
+                            createRaffleTransactionsByDayV2[day]++;
                         } else {
-                            buyEntryTransactionsByDayV2[day] = 1;
+                            createRaffleTransactionsByDayV2[day] = 1;
                         }
                     }
                 });
-
-             
-
-        
-
-
-
-
-                 // Process transactions and sum _numberEntries for BuyEntry chart
-    
-    transactions.forEach((transaction) => {
-        const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
-        const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
-
-        if (transaction.input.startsWith(buyEntrySignature)) {
-            // Decode the input data to get _numberEntries
-            const inputData = transaction.input.substring(10); // Remove the function signature
-            const web3 = new Web3();
-            const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
-
-            // Extract _numberEntries and sum it up
-            const numberEntries = parseInt(decodedData[1]);
-            
-            if (buyEntryTotalEntriesByDayV2[day]) {
-                buyEntryTotalEntriesByDayV2[day] += numberEntries;
-            } else {
-                buyEntryTotalEntriesByDayV2[day] = numberEntries;
-            }
-        }
-    });
-
-   
-                // Process transactions and group by day for CancelRaffle chart
                 
+               
+              // Process transactions and group by day for CancelRaffle chart
+               
                 transactions.forEach((transaction) => {
                     const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
                     const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
@@ -362,23 +518,22 @@ console.log('Sums per day in ether:', sumsByDayInEtherV2);
                     }
                 });
 
-                // Process transactions and group by day for CreateRaffle chart
-               
-                transactions.forEach((transaction) => {
+    // Process transactions and group by day for SetWinner by Day chart
+                
+    transactions.forEach((transaction) => {
                     const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
                     const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
 
-                    if (createRaffleSignatures.some((signature) => transaction.input.includes(signature))) {
-                        if (createRaffleTransactionsByDayV2[day]) {
-                            createRaffleTransactionsByDayV2[day]++;
+                    if (transaction.input.startsWith(setWinnerRaffleSignature)) {
+                        if (setWinnerRaffleByDayV2[day]) {
+                            setWinnerRaffleByDayV2[day]++;
                         } else {
-                            createRaffleTransactionsByDayV2[day] = 1;
+                            setWinnerRaffleByDayV2[day] = 1;
                         }
                     }
                 });
 
-                
-
+            
 // Load and parse the CSV file
 fetch('ghn.csv')
     .then((response) => response.text())
@@ -568,6 +723,27 @@ fetch('ghn.csv')
         
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
         
         // Fetch data from the Etherscan API
         fetch(apiUrl)
@@ -600,54 +776,8 @@ fetch('ghn.csv')
                     console.log(transactions)
 
 
-                    
 
-                    
-
-          // Process transactions and sum values per day in ether
-transactions.forEach((transaction) => {
-  const timestamp = parseInt(transaction.timeStamp);
-  const date = new Date(timestamp * 1000); // Convert timestamp to Date object
-  const dayKey = date.toISOString().split('T')[0]; // Get the YYYY-MM-DD part as the key
-
-  const valueInWei = parseInt(transaction.value);
-  const valueInEther = valueInWei / 1e18; // Convert wei to ether
-
-if (transaction.input.startsWith(buyEntrySignature)) 
-if (sumsByDayInEther[dayKey]) {
-    sumsByDayInEther[dayKey] += valueInEther;
-  } else {
-    sumsByDayInEther[dayKey] = valueInEther;
-  }
-});
-
-console.log('Sums per day in ether:', sumsByDayInEther);
-
-// Initialize a new object to store the combined sums
-const combinedSumsByDayInEther = {};
-
-// Iterate over the keys in sumsByDayInEther
-for (const dayKey in sumsByDayInEther) {
-    if (sumsByDayInEther.hasOwnProperty(dayKey)) {
-        // Add the value from sumsByDayInEther to the combinedSumsByDayInEther
-        combinedSumsByDayInEther[dayKey] = (combinedSumsByDayInEther[dayKey] || 0) + sumsByDayInEther[dayKey];
-    }
-}
-
-// Iterate over the keys in sumsByDayInEtherV2
-for (const dayKey in sumsByDayInEtherV2) {
-    if (sumsByDayInEtherV2.hasOwnProperty(dayKey)) {
-        // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
-        combinedSumsByDayInEther[dayKey] = (combinedSumsByDayInEther[dayKey] || 0) + sumsByDayInEtherV2[dayKey];
-    }
-}
-
-// Now combinedSumsByDayInEther contains the combined sums
-console.log('Combined Sums per day in ether:', combinedSumsByDayInEther);
-
-                    
-
-                // Fetch addresses of BuyEntry transactions
+                                    // Fetch addresses of BuyEntry transactions
                 const buyEntryAddresses = transactions
                     .filter((transaction) => transaction.input.startsWith(buyEntrySignature))
                     .map((transaction) => transaction.from.toLowerCase()); // Convert addresses to lowercase for case-insensitive comparison
@@ -695,15 +825,8 @@ for (const dayKey in buyEntryTransactionsByDayV2) {
 console.log('Combined Buy Entry Transactions By Day:', combinedbuyEntryTransactionsByDay);
 
 
-             
-
-        
-
-
-
-
-                 // Process transactions and sum _numberEntries for BuyEntry chart
-    const buyEntryTotalEntriesByDay = {};
+// Process transactions and sum _numberEntries for BuyEntry chart
+const buyEntryTotalEntriesByDay = {};
     transactions.forEach((transaction) => {
         const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
         const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
@@ -724,6 +847,48 @@ console.log('Combined Buy Entry Transactions By Day:', combinedbuyEntryTransacti
             }
         }
     });
+
+    // Process transactions and sum _numberEntries for BuyEntry chart
+const buyEntryTotalEntriesByDayId = {};
+
+transactions.forEach((transaction) => {
+  const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+  const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+  if (transaction.input.startsWith(buyEntrySignature)) {
+    // Decode the input data to get _numberEntries and _buyTicketRaffleId
+    const inputData = transaction.input.substring(10); // Remove the function signature
+    const web3 = new Web3();
+    const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
+
+    // Extract _numberEntries and _buyTicketRaffleId
+    const numberEntries = parseInt(decodedData[1]);
+    const buyTicketRaffleId = decodedData[0];
+
+    if (!buyEntryTotalEntriesByDayId[day]) {
+        buyEntryTotalEntriesByDayId[day] = {
+        totalEntries: 0,
+        buyTicketRaffleIds: {},
+      };
+    }
+
+    // Sum _numberEntries and keep track of _buyTicketRaffleId
+    buyEntryTotalEntriesByDay[day].totalEntries += numberEntries;
+
+    if (!buyEntryTotalEntriesByDayId[day].buyTicketRaffleIds[buyTicketRaffleId]) {
+        buyEntryTotalEntriesByDayId[day].buyTicketRaffleIds[buyTicketRaffleId] = 0;
+    }
+
+    buyEntryTotalEntriesByDayId[day].buyTicketRaffleIds[buyTicketRaffleId] += numberEntries;
+  }
+});
+
+console.log('Buy Entry Total Entries By Day:', buyEntryTotalEntriesByDayId);
+
+
+
+
+
 
                     // Initialize a new object to store the combined sums
 const combinedbuyEntryTotalEntriesByDay = {};
@@ -746,6 +911,197 @@ for (const dayKey in buyEntryTotalEntriesByDayV2) {
 
 // Now combinedSumsByDayInEther contains the combined sums
 console.log('Combined Buy Total Entries By Day:', combinedbuyEntryTotalEntriesByDay);
+
+
+
+
+      
+
+
+          // Process transactions and sum values per day in ether
+          
+          transactions.forEach((transaction) => {
+  const timestamp = parseInt(transaction.timeStamp);
+  const date = new Date(timestamp * 1000); // Convert timestamp to Date object
+  const dayKey = date.toISOString().split('T')[0]; // Get the YYYY-MM-DD part as the key
+
+  const valueInWei = parseInt(transaction.value);
+  const valueInEther = valueInWei / 1e18; // Convert wei to ether
+
+if (transaction.input.startsWith(buyEntrySignature)) 
+if (sumsByDayInEther[dayKey]) {
+    sumsByDayInEther[dayKey] += valueInEther;
+    
+  } else {
+    sumsByDayInEther[dayKey] = valueInEther;
+  }
+});
+
+console.log('Sums per day in ether:', sumsByDayInEther);
+
+
+
+
+
+// Initialize a new object to store the combined sums
+const combinedSumsByDayInEther = {};
+
+// Iterate over the keys in sumsByDayInEther
+for (const dayKey in sumsByDayInEther) {
+    if (sumsByDayInEther.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEther to the combinedSumsByDayInEther
+        combinedSumsByDayInEther[dayKey] = (combinedSumsByDayInEther[dayKey] || 0) + sumsByDayInEther[dayKey];
+    }
+}
+
+// Iterate over the keys in sumsByDayInEtherV2
+for (const dayKey in sumsByDayInEtherV2) {
+    if (sumsByDayInEtherV2.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
+        combinedSumsByDayInEther[dayKey] = (combinedSumsByDayInEther[dayKey] || 0) + sumsByDayInEtherV2[dayKey];
+    }
+}
+
+// Now combinedSumsByDayInEther contains the combined sums
+console.log('Combined Sums per day in ether:', combinedSumsByDayInEther);
+
+                    
+// Initialize an object to store sums by day
+const sumsByDayInDummy = {};
+
+// Make an HTTP GET request to the API
+fetch(apiDummyUrl)
+  .then((dresponse) => dresponse.json())
+  .then((ddata) => {
+    // Process the data returned by the API
+    console.log('ddata', ddata);
+
+    // Extract value data from the transactions
+    const dtransactions = ddata.result;
+
+    console.log('dtransaction', dtransactions);
+
+    // Iterate through transactions and retrieve the value data
+    dtransactions.forEach((transaction) => {
+      const timestamp = parseInt(transaction.timeStamp);
+      const date = new Date(timestamp * 1000); // Convert timestamp to Date object
+      const day = date.toISOString().split('T')[0]; // Get the YYYY-MM-DD part as the key
+
+      const valueInWei = parseInt(transaction.value);
+      const valueInDummy = valueInWei / 1e18; // Convert wei to ether
+
+      if (sumsByDayInDummy[day]) {
+        sumsByDayInDummy[day] += valueInDummy;
+      } else {
+        sumsByDayInDummy[day] = valueInDummy;
+      }
+    });
+
+    console.log('Sums per day in Dummy:', sumsByDayInDummy);
+
+    // Assuming you have already fetched and processed the data
+
+    // Define the data for the chart
+    const labelsd = Object.keys(sumsByDayInDummy);
+    const dummydata = labelsd.map((dayKey) => sumsByDayInDummy[dayKey]);
+
+    // Get a reference to the canvas element
+    const ctxd = document.getElementById('dummySpentPerDayChart').getContext('2d');
+
+    // Create the chart
+    new Chart(ctxd, {
+      type: 'bar', // Bar chart
+      data: {
+        labels: labelsd, // X-axis labels (dates)
+        datasets: [{
+          label: 'Dummy Spent on Tickets',
+          data: dummydata, // Y-axis data (transaction counts)
+          backgroundColor: 'rgba(245, 40, 145, 0.8)', // Bar color
+          borderColor: 'rgba(245, 40, 145, 0.8)', // Border color of bars
+          borderWidth: 1, // Border width of bars
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'category',
+            title: {
+              display: true,
+              text: 'Day', // X-axis title
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'DUMMY', // Y-axis title
+            },
+          },
+        },
+      },
+    });
+  })
+  .catch((error) => {
+    console.error('Error fetching data from Etherscan:', error);
+  });
+
+
+
+
+
+
+
+// Now combinedSumsByDay contains the combined sums of both variables
+
+// Process transactions and group by day for CreateRaffle chart
+const createRaffleTransactionsByDay = {};
+                transactions.forEach((transaction) => {
+
+                    console.log ('create raffle txs', transaction);
+                    
+
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+                    if (createRaffleSignatures.some((signature) => transaction.input.includes(signature))) {
+                        if (createRaffleTransactionsByDay[day]) {
+                            createRaffleTransactionsByDay[day]++;
+                        } else {
+                            createRaffleTransactionsByDay[day] = 1;
+                        }
+                    }
+                });
+              
+
+                                    // Initialize a new object to store the combined sums
+const combinedcreateRaffleTransactionsByDay = {};
+
+// Iterate over the keys in sumsByDayInEther
+for (const dayKey in createRaffleTransactionsByDay) {
+    if (createRaffleTransactionsByDay.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEther to the combinedSumsByDayInEther
+        combinedcreateRaffleTransactionsByDay[dayKey] = (combinedcreateRaffleTransactionsByDay[dayKey] || 0) + createRaffleTransactionsByDay[dayKey];
+    }
+}
+
+// Iterate over the keys in sumsByDayInEtherV2
+for (const dayKey in createRaffleTransactionsByDayV2) {
+    if (createRaffleTransactionsByDayV2.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
+        combinedcreateRaffleTransactionsByDay[dayKey] = (combinedcreateRaffleTransactionsByDay[dayKey] || 0) + createRaffleTransactionsByDayV2[dayKey];
+    }
+}
+
+// Now combinedSumsByDayInEther contains the combined sums
+console.log('Combined Create Raffle Transactions By Day:', combinedcreateRaffleTransactionsByDay);
+
+
+        
+
+
+                 
     
 
    
@@ -764,7 +1120,7 @@ console.log('Combined Buy Total Entries By Day:', combinedbuyEntryTotalEntriesBy
                     }
                 });
 
-                                                        // Initialize a new object to store the combined sums
+                                                                        // Initialize a new object to store the combined sums
 const combinedcancelRaffleTransactionsByDay = {};
 
 // Iterate over the keys in sumsByDayInEther
@@ -788,43 +1144,49 @@ console.log('Combined Cancel Raffle Transactions By Day:', combinedcancelRaffleT
 
 
 
-                // Process transactions and group by day for CreateRaffle chart
-                const createRaffleTransactionsByDay = {};
+
+
+                               // Process transactions and group by day for CancelRaffle chart
+                               const setWinnerRaffleByDay = {};
                 transactions.forEach((transaction) => {
                     const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
                     const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
 
-                    if (createRaffleSignatures.some((signature) => transaction.input.includes(signature))) {
-                        if (createRaffleTransactionsByDay[day]) {
-                            createRaffleTransactionsByDay[day]++;
+                    if (transaction.input.startsWith(setWinnerRaffleSignature)) {
+                        if (setWinnerRaffleByDay[day]) {
+                            setWinnerRaffleByDay[day]++;
                         } else {
-                            createRaffleTransactionsByDay[day] = 1;
+                            setWinnerRaffleByDay[day] = 1;
                         }
                     }
                 });
 
-
-                                    // Initialize a new object to store the combined sums
-const combinedcreateRaffleTransactionsByDay = {};
+              
+ // Initialize a new object to store the combined sums
+const combinedSetWinnerRaffleByDay = {};
 
 // Iterate over the keys in sumsByDayInEther
-for (const dayKey in createRaffleTransactionsByDay) {
-    if (createRaffleTransactionsByDay.hasOwnProperty(dayKey)) {
+for (const dayKey in setWinnerRaffleByDay) {
+    if (setWinnerRaffleByDay.hasOwnProperty(dayKey)) {
         // Add the value from sumsByDayInEther to the combinedSumsByDayInEther
-        combinedcreateRaffleTransactionsByDay[dayKey] = (combinedcreateRaffleTransactionsByDay[dayKey] || 0) + createRaffleTransactionsByDay[dayKey];
+        combinedSetWinnerRaffleByDay[dayKey] = (combinedSetWinnerRaffleByDay[dayKey] || 0) + setWinnerRaffleByDay[dayKey];
     }
 }
 
 // Iterate over the keys in sumsByDayInEtherV2
-for (const dayKey in createRaffleTransactionsByDayV2) {
-    if (createRaffleTransactionsByDayV2.hasOwnProperty(dayKey)) {
+for (const dayKey in setWinnerRaffleByDayV2) {
+    if (setWinnerRaffleByDayV2.hasOwnProperty(dayKey)) {
         // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
-        combinedcreateRaffleTransactionsByDay[dayKey] = (combinedcreateRaffleTransactionsByDay[dayKey] || 0) + createRaffleTransactionsByDayV2[dayKey];
+        combinedSetWinnerRaffleByDay[dayKey] = (combinedSetWinnerRaffleByDay[dayKey] || 0) + setWinnerRaffleByDayV2[dayKey];
     }
 }
 
 // Now combinedSumsByDayInEther contains the combined sums
-console.log('Combined Create Raffle Transactions By Day:', combinedcreateRaffleTransactionsByDay);
+console.log('Combined Set WInner Raffle Transactions By Day:', combinedSetWinnerRaffleByDay);
+
+
+
+                
 
                 
 
@@ -1125,6 +1487,9 @@ console.log('Combined The Plague Holders Count:', combinedThePlagueHoldersCount)
 console.log('Combined Sappy Seals Holders Count:', combinedSappySealsHoldersCount);
 // ... Log combined counts for other categories ...
 
+
+
+
                 
                 // Create BuyEntry Transactions by Day Chart
 const buyEntryTransactionsByDayCtx = document.getElementById('buyEntryChart').getContext('2d');
@@ -1163,6 +1528,51 @@ new Chart(buyEntryTransactionsByDayCtx, {
         }
         },
     })
+
+
+
+
+// Get a reference to the canvas element
+const ctx = document.getElementById('drawnRaffleChart').getContext('2d');
+
+// Define the data for the chart
+const labels = Object.keys(combinedSetWinnerRaffleByDay);
+const data = Object.values(combinedSetWinnerRaffleByDay);
+
+// Create the chart
+const chart = new Chart(ctx, {
+    type: 'bar', // Bar chart
+    data: {
+        labels: labels, // X-axis labels (dates)
+        datasets: [{
+            label: 'Drawn Raffle Transactions',
+            data: data, // Y-axis data (transaction counts)
+            backgroundColor: 'rgba(75, 192, 192, 0.6)', // Bar color
+            borderWidth: 1, // Border width of bars
+        }],
+    },
+    options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Day'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Transactions'
+                    }
+                }
+            },
+         
+    }
+        });
 
 
 
@@ -1303,7 +1713,7 @@ new Chart(buyEntryValueByDayCtxs, {
         labels: Object.keys(combinedSumsByDayInEther),
         datasets: [
             {
-                label: 'ETH Spended on Tickets',
+                label: 'ETH Spent on Tickets',
                 data: Object.keys(combinedSumsByDayInEther).map((day) => combinedSumsByDayInEther[day] || 0),
                 backgroundColor: 'rgba(99, 98, 255, 0.8)',
                 borderColor: 'rgba(99, 98, 255, 0.8)',
@@ -1326,13 +1736,17 @@ new Chart(buyEntryValueByDayCtxs, {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Transactions'
+                    text: 'ETH'
                 }
             }
         },
 
          }
 });
+
+
+ 
+
 
                                // Create BuyEntry Tickets by Month Chart
                                
@@ -1451,8 +1865,6 @@ new Chart(buyEntryTicketsByMonthCtx, {
             });
 
           
-
-
 
 
 
