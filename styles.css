@@ -21,6 +21,9 @@ h1 {
    align-items: center;
    justify-content: center;
    padding-top: calc(var(--header-height) - 1.2rem);
+
+
+   
    
     
     
@@ -53,11 +56,16 @@ canvas {
 .dvda-button1,
 .AHC-button1,
 .RB-button1,
-.mutant-button1 {
+.mutant-button1,
+.vip-button1 {
     display: inline-block;
     background: transparent;
     border: transparent;
     cursor: pointer;
+}
+
+.dvda-button1:hover {
+    cursor: hand;
 }
 
 /* Use :hover pseudo-class for the hover effect */
@@ -83,8 +91,9 @@ canvas {
 }
 
 .connect-button1 {
-   
+    
     display: inline-block;
+    
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
     cursor: pointer;
@@ -134,4 +143,65 @@ canvas {
     margin-left: 30.5%;
 }
 
-
+/* Style for the modal container */
+.custom-modal-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 999; /* Ensure the modal is on top of other content */
+  }
+  
+  /* Style for the modal */
+  .custom-modal {
+    background-image: url('https://public.nftstatic.com/nft/temp/cex/nft-cex/S3/1676034213470_md8wxo58ll8rnvaq3xev3v7xe06xbpit.svg');
+    background-repeat: no-repeat;
+    background-color: white;
+    height: 35%;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+  
+  /* Style for the modal message */
+  .custom-modal p {
+    color: goldenrod;
+    text-shadow: 1px;
+    font-size: 17px;
+    margin-bottom: 15px;
+    text-decoration: underline;
+    text-decoration-color: gold;
+    text-decoration-style: solid;   
+     
+}
+  
+  /* Style for the "Yes" and "No" buttons */
+  .custom-modal button {
+    padding: 10px 20px;
+    background-color: black;
+    border-color: greenyellow;
+    color: white;
+    box-shadow: 1.5px;
+    margin: 5px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* Style for the "Yes" button */
+  .custom-modal button.yes-button {
+    background-color: green;
+    color: white;
+  }
+  
+  /* Style for the "No" button */
+  .custom-modal button.no-button {
+    background-color: red;
+    color: white;
+  }
+  
