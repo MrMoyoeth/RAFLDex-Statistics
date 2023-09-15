@@ -1,0 +1,969 @@
+<html>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Link the custom CSS file -->
+    <link rel="stylesheet" href="styles.css">
+
+    <body>
+
+      <button id="rafldex-button" class="rafldex-button1"><img src="https://www.rafldex.io/_next/static/media/rafldex-banner-logo.c5c4ed98.svg" width="110"></button>
+        
+      <button id="GHN-button" class="GHN-button1"><img src="ghnicon.png" width="60" height="60"></button>
+      <button id="SrB-button" class="SrB-button1" ><img src="banano.png" width="60" height="60"></button>
+      <button id="AHC-button" class="AHC-button1"><img src="AHC.png"  width="60" height="60"></button>
+      <button id="dvda-button" class="dvda-button1"><img src="DVDA.png"  width="60" height="60"></button>
+      <button id="RB-button" class="RB-button1"><img src="rb.png"  width="60" height="60"></button>
+      <button id="mutant-button" class="mutant-button1"><img src="mutant.png"  width="60" height="60"></button>
+     
+      <h2><button id="connect-button" class="connect-button1"><img src="https://metaschool.so/articles/wp-content/uploads/2022/11/metamaskfox.png" width="10%"></button></h2>
+  
+  
+      <h1 class="center-title">RAFLDex Statistics by SrMessi.eth</h1>
+  
+  
+     <!-- Container for the BuyEntry Tickets by Month chart -->
+     <div class="chart-container" style="height: 800px;">
+      <canvas id="VIPRatioV1"></canvas>
+  </div>
+  
+           <!-- Add a 3px separation -->
+           <div style="height: 3px;"></div>
+  
+    
+     <!-- Container for the BuyEntry Tickets by Month chart -->
+     <div class="chart-container" style="height: 800px;">
+      <canvas id="VIPRatioV2"></canvas>
+  </div>
+  
+     
+
+<script>
+
+  
+let account;
+
+
+
+//Connect Metamask button
+document.getElementById('connect-button').addEventListener('click', event => {
+            let button = event.target;
+            ethereum.request({method: 'eth_requestAccounts'}).then(accounts => {
+                account = accounts[0];
+               console.log(account);
+               button.textContent = account;
+
+                ethereum.request({method: 'eth_getBalance' , params: [account, 'latest']}).then(result => {
+                    console.log(result);
+                    let wei = parseInt(result,16);
+                    let balance = wei / (10**18);
+                    console.log(balance + " ETH");
+                    
+                });
+            });
+       });
+
+
+
+// Add an event listener to the button
+document.getElementById('rafldex-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://www.rafldex.io/", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('GHN-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/godhatesnftees", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('SrB-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/srbananos", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('AHC-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/apehaterclub", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('dvda-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/dvda", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('RB-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/rottenbananos", "_blank");
+});
+
+// Add an event listener to the button
+document.getElementById('mutant-button').addEventListener('click', event => {
+    // Open the specified URL in a new tab
+    window.open("https://opensea.io/collection/mutant-godhatesnftees", "_blank");
+});
+
+
+
+
+
+        // Replace with your Etherscan API key
+        const etherscanApiKey = '5W8M3RM6HVZ5Z4NDSMRYBMHP95UVWHQMUP';
+
+        // Specify the contract addresses
+        const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92';
+        const contractAddressV2 = '0x6C02eb58354C0f53D4BA024B1b2b94FA7B1b9389'
+        const tokenContractAddress = '0xc084a29dd0c9436568435938b1c6c5af4f5c035f';
+
+        // Function signature of the "buyEntry" function
+        const buyEntrySignature = '0xb26a78c5'; // Replace with the actual function signature
+
+
+        // Function signature of the "cancelRaffle" function
+        const cancelRaffleSignature = '0x5fba3171'; // Replace with the actual function signature
+
+        // Function signatures to filter for the new chart
+        const createRaffleSignatures = ['0xcf482ee9', '0x01a6e623', '0xead5c7bd'];
+
+        const setWinnerRaffleSignature = ['0x88ec392c'];
+
+        const NFTTransferIDSignature = ['0x7e9ab850b8ae5bd2e5fba4accceb80d63e90bcb89852d7cae476cd917f25b25d'];
+
+        // Construct the Etherscan API URL to fetch transactions
+        const apiUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddress}&apikey=${etherscanApiKey}`;
+
+                // Construct the Etherscan API URL to fetch transactions
+                const apiUrlV2 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+
+                const apiDummyUrl = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddress}&apikey=${etherscanApiKey}`;
+
+                const apiDummyUrlV2 = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+                
+                const apiNFT = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddress}&apikey=${etherscanApiKey}`;
+                const apiNFTV2 = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+
+                // Define the API URL
+        const apiLogsUrl = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddress}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
+        const apiLogsUrl2 = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddressV2}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
+
+
+
+        // Construct the Etherscan API URL to fetch token balances
+        const tokenApiUrl = `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${tokenContractAddress}&apikey=${etherscanApiKey}`;
+
+
+
+// Fetch data from the Etherscan API
+fetch(apiUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                const transactions = data.result;
+
+                // Calculate the offset between local timezone and Etherscan's timezone
+                const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
+                const etherscanTimezoneOffset = 0; // Adjust this offset if needed
+
+                // Function to convert Unix timestamps to the Etherscan timezone
+                function convertToEtherscanTimezone(timestamp) {
+                    return new Date((timestamp * 1000) + ((localTimezoneOffset - etherscanTimezoneOffset) * 60 * 1000));
+                }
+
+                // Function to fetch token balance for an address
+                function fetchTokenBalance(address) {
+                    return fetch(`${tokenApiUrl}&address=${address}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            return data.result;
+                        })
+                        .catch((error) => {
+                            console.error(`Error fetching token balance for address ${address}:`, error);
+                            return '0';
+                        });
+                    }
+
+                    console.log(transactions)
+
+
+
+// Process transactions and sum _numberEntries for BuyEntry chart
+const winnerId = {};
+
+transactions.forEach((transaction) => {
+  const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+  const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+  if (transaction.input.startsWith(setWinnerRaffleSignature)) {
+    // Decode the input data to get _numberEntries and _buyTicketRaffleId
+    const inputData = transaction.input.substring(10); // Remove the function signature
+    const web3 = new Web3();
+    const decodedData = web3.eth.abi.decodeParameters(['uint256'], inputData);
+
+    // Extract _numberEntries and _buyTicketRaffleId
+    const winnerRaffleId = decodedData[0];
+
+    if (!winnerId[day]) {
+      winnerId[day] = {
+        winnerRaffleIds: [],
+      };
+    }
+
+    winnerId[day].winnerRaffleIds.push(winnerRaffleId);
+  }
+});
+
+console.log('Winner ID:', winnerId);
+
+
+
+
+
+
+
+
+
+
+
+// Process transactions and sum _numberEntries for BuyEntry chart
+const winnerIdhashes = {};
+
+transactions.forEach((transaction) => {
+  const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+  const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+  if (transaction.input.startsWith(setWinnerRaffleSignature)) {
+    // Decode the input data to get _numberEntries and _buyTicketRaffleId
+    const inputData = transaction.input.substring(10); // Remove the function signature
+    const web3 = new Web3();
+    const decodedData = web3.eth.abi.decodeParameters(['uint256'], inputData);
+
+    // Extract _numberEntries and _buyTicketRaffleId
+    const winnerRaffleIdHash = decodedData[0];
+
+    if (!winnerIdhashes[day]) {
+      winnerIdhashes[day] = {
+        winnerRaffleIds: [],
+        hashes: [],
+      };
+    }
+
+    winnerIdhashes[day].winnerRaffleIds.push(winnerRaffleIdHash);
+    winnerIdhashes[day].hashes.push(transaction.hash);
+  }
+});
+
+console.log('Winner ID hashes:', winnerIdhashes);
+
+// Initialize an object to store sums by transaction and transaction hashes
+const sumsByTransactionDummy = {};
+const transactionDummyHashes = [];
+
+function fetchDataAndProcess(apiDummyUrl, delay) {
+  return new Promise((resolve, reject) => {
+    // Use setTimeout to introduce a delay before making the API request
+    setTimeout(() => {
+      // Make an HTTP GET request to the API
+      fetch(apiDummyUrl)
+        .then((dresponse) => dresponse.json())
+        .then((ddata) => {
+          // Process the data returned by the API
+          console.log('ddata', ddata);
+
+          // Extract value data from the transactions
+          const dtransactions = ddata.result;
+
+          console.log('dtransaction', dtransactions);
+
+          // Iterate through transactions and retrieve the value data and hash
+          dtransactions.forEach((transaction) => {
+            const transactionHash = transaction.hash;
+
+            const valueInWei = parseInt(transaction.value);
+            const valueInDummy = valueInWei / 1e18; // Convert wei to ether
+
+            // Add the transaction hash to the array
+            transactionDummyHashes.push(transactionHash);
+
+            sumsByTransactionDummy[transactionHash] = valueInDummy;
+          });
+
+          // Resolve the Promise with the collected data
+          resolve({ sumsByTransactionDummy, transactionDummyHashes });
+        })
+        .catch((error) => {
+          // Reject the Promise with an error if there's a problem
+          reject(error);
+        });
+    }, delay); // Introduce a delay before making the API request
+  });
+}
+
+// Define the delay between API requests (in milliseconds)
+const apiRequestDelay = 10000; // You can adjust this value as needed
+// Call the function and handle the resolved data
+fetchDataAndProcess(apiDummyUrl)
+  .then(({ sumsByTransactionDummy, transactionDummyHashes }) => {
+    // Log the data returned by the function
+    console.log('Sums by Transaction in Dummy:', sumsByTransactionDummy);
+    console.log('Transaction Dummy Hashes:', transactionDummyHashes);
+
+
+
+// Initialize an array to store the extracted data
+const extractedDataArray = [];
+
+// Make the API request
+axios.get(apiLogsUrl)
+  .then((response) => {
+    const logs = response.data.result;
+
+    // Iterate through the logs to find the "NFTTransferID" event
+    logs.forEach((log) => {
+      if (log.topics && log.topics.length > 0) {
+        // Check if the first topic matches the "NFTTransferID" event
+        if (log.topics[0] == NFTTransferIDSignature) {
+          // Extract the relevant data from the log
+          const topics1Data = parseInt(log.topics[1], 16); // Convert hexadecimal to decimal
+          const transactionHash = log.transactionHash;
+
+          // Create an object to store the extracted data
+          const extractedData = {
+            topics1Data: topics1Data,
+            transactionHash: transactionHash,
+          };
+
+          // Push the extracted data object into the array
+          extractedDataArray.push(extractedData);
+        }
+      }
+    });
+
+    // Initialize an object to store BuyEntry transactions by raffle ID
+    const buyEntryTransactionsByRaffleId = {};
+
+    // Fetch NFT data from the API
+    fetch(apiNFT)
+      .then((response) => response.json())
+      .then((data) => {
+        // Process the transaction data to filter ERC-721 transfers
+        const nftTransfers = data.result;
+
+        // Define a function to extract transactions
+        function extractTransactions(transactionData) {
+          return transactionData.map((tx) => {
+            return tx; // Return the entire transaction object
+          });
+        }
+
+        // Extract transactions using the function
+        const transactions = extractTransactions(nftTransfers);
+
+        // Log the extracted data
+        console.log(JSON.stringify(transactions, null, 2));
+
+
+        // Extract transactions using the function
+    const extractedData = extractTransactions(nftTransfers);
+
+    // Log the extracted data
+    console.log(JSON.stringify(extractedData, null, 2));
+
+
+
+        // Iterate through extractedDataArray to match transactionHash with transactions and add tokenName
+        extractedDataArray.forEach((extractedItem) => {
+          const matchingItem = transactions.find((item) => item.hash === extractedItem.transactionHash);
+          if (matchingItem) {
+            extractedItem.tokenName = matchingItem.tokenName;
+          }
+        });
+
+        // Log the updated extractedDataArray with tokenNames
+        console.log('Updated extractedDataArray with tokenNames:', extractedDataArray);
+
+     
+
+         // Fetch data from the Etherscan API
+         fetch(apiUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                const transactions = data.result;
+
+                // Calculate the offset between local timezone and Etherscan's timezone
+                const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
+                const etherscanTimezoneOffset = 0; // Adjust this offset if needed
+
+                // Function to convert Unix timestamps to the Etherscan timezone
+                function convertToEtherscanTimezone(timestamp) {
+                    return new Date((timestamp * 1000) + ((localTimezoneOffset - etherscanTimezoneOffset) * 60 * 1000));
+                }
+
+                // Function to fetch token balance for an address
+                function fetchTokenBalance(address) {
+                    return fetch(`${tokenApiUrl}&address=${address}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            return data.result;
+                        })
+                        .catch((error) => {
+                            console.error(`Error fetching token balance for address ${address}:`, error);
+                            return '0';
+                        });
+                    }
+
+                    console.log(transactions)
+
+
+           // ...
+
+// Process transactions and sum _numberEntries, valueInEther, and valueInDummy for BuyEntry chart
+transactions.forEach((transaction) => {
+  if (transaction.input.startsWith(buyEntrySignature)) {
+    // Decode the input data to get _numberEntries and _buyTicketRaffleId
+    const inputData = transaction.input.substring(10); // Remove the function signature
+    const web3 = new Web3();
+    const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
+
+    // Extract _numberEntries, _buyTicketRaffleId, and valueInWei
+    const numberEntries = parseInt(decodedData[1]);
+    const buyTicketRaffleId = decodedData[0];
+    const valueInWei = parseInt(transaction.value);
+    const valueInEther = valueInWei / 1e18; // Convert wei to ether
+
+    // Calculate valueInDummy based on transaction hash match
+    const valueInDummy = sumsByTransactionDummy[transaction.hash] || 0;
+
+    // Check if the buyTicketRaffleId exists in the aggregated data, and initialize if not
+    if (!buyEntryTransactionsByRaffleId[buyTicketRaffleId]) {
+      buyEntryTransactionsByRaffleId[buyTicketRaffleId] = {
+        totalNumberEntries: 0,
+        totalValueInEther: 0,
+        totalValueInDummy: 0,
+        hashes: [], // Initialize an array to store hashes
+       
+        buyTicketRaffleId: buyTicketRaffleId, // Add buyTicketRaffleId to the entry
+      };
+    }
+
+    // Add the data to the aggregated BuyEntry transactions for this buyTicketRaffleId
+    buyEntryTransactionsByRaffleId[buyTicketRaffleId].totalNumberEntries += numberEntries;
+    buyEntryTransactionsByRaffleId[buyTicketRaffleId].totalValueInEther += valueInEther;
+    buyEntryTransactionsByRaffleId[buyTicketRaffleId].totalValueInDummy += valueInDummy;
+
+    // Add the hash to the array
+    buyEntryTransactionsByRaffleId[buyTicketRaffleId].hashes.push(transaction.hash);
+
+    // Iterate through extractedDataArray to match topics1Data with buyTicketRaffleId and add tokenName
+extractedDataArray.forEach((extractedItem) => {
+  for (const buyRaffleId in buyEntryTransactionsByRaffleId) {
+    const raffleId = buyEntryTransactionsByRaffleId[buyRaffleId];
+    if (raffleId.buyTicketRaffleId == extractedItem.topics1Data) {
+      raffleId.tokenName = extractedItem.tokenName;
+    }
+  }
+});
+
+    
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Fetch data from the Etherscan API
+fetch(apiUrlV2)
+  .then((response) => response.json())
+  .then((data) => {
+    const transactions = data.result;
+
+    // Calculate the offset between local timezone and Etherscan's timezone
+    const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
+    const etherscanTimezoneOffset = 0; // Adjust this offset if needed
+
+    // Function to convert Unix timestamps to the Etherscan timezone
+    function convertToEtherscanTimezone(timestamp) {
+      return new Date(
+        timestamp * 1000 + (localTimezoneOffset - etherscanTimezoneOffset) * 60 * 1000
+      );
+    }
+
+    // Function to fetch token balance for an address
+    function fetchTokenBalance(address) {
+      return fetch(`${tokenApiUrl}&address=${address}`)
+        .then((response) => response.json())
+        .then((data) => {
+          return data.result;
+        })
+        .catch((error) => {
+          console.error(`Error fetching token balance for address ${address}:`, error);
+          return '0';
+        });
+    }
+
+    console.log(transactions);
+
+    // Process transactions and sum _numberEntries for BuyEntry chart
+    const winnerIdv2 = {};
+
+    transactions.forEach((transaction) => {
+      const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+      const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+      if (transaction.input.startsWith(setWinnerRaffleSignature)) {
+        // Decode the input data to get _numberEntries and _buyTicketRaffleId
+        const inputData = transaction.input.substring(10); // Remove the function signature
+        const web3 = new Web3();
+        const decodedData = web3.eth.abi.decodeParameters(['uint256'], inputData);
+
+        // Extract _numberEntries and _buyTicketRaffleId
+        const winnerRaffleIdv2 = decodedData[0];
+
+        if (!winnerIdv2[day]) {
+          winnerIdv2[day] = {
+            winnerRaffleIds: [],
+          };
+        }
+
+        winnerIdv2[day].winnerRaffleIds.push(winnerRaffleIdv2);
+      }
+    });
+
+    console.log('Winner ID V2:', winnerIdv2);
+
+
+        // ...
+
+    // Call the function to fetch and process data from the dummy API
+    fetchDataAndProcess(apiDummyUrlV2, apiRequestDelay)
+      .then(({ sumsByTransactionDummyv2, transactionDummyHashesv2 }) => {
+        // Log the data returned by the function
+        console.log('Sums by Transaction in Dummy V2:', sumsByTransactionDummyv2);
+        console.log('Transaction Dummy Hashes V2:', transactionDummyHashesv2);
+
+        // Initialize an array to store the extracted data
+        const extractedDataArrayv2 = [];
+
+        // Make the API request to logsUrl2
+        axios.get(apiLogsUrl2)
+          .then((response) => {
+            const logsv2 = response.data.result;
+
+            // Iterate through the logs to find the "NFTTransferID" event
+            logsv2.forEach((log) => {
+              if (log.topics && log.topics.length > 0) {
+                // Check if the first topic matches the "NFTTransferID" event
+                if (log.topics[0] == NFTTransferIDSignature) {
+                  // Extract the relevant data from the log
+                  const topics1Datav2 = parseInt(log.topics[1], 16); // Convert hexadecimal to decimal
+                  const transactionHashv2 = log.transactionHash;
+
+                  // Create an object to store the extracted data
+                  const extractedDatav2 = {
+                    topics1Data: topics1Datav2,
+                    transactionHash: transactionHashv2,
+                  };
+
+                  // Push the extracted data object into the array
+                  extractedDataArrayv2.push(extractedDatav2);
+                }
+              }
+            });
+
+            // Initialize an object to store BuyEntry transactions by raffle ID
+            const buyEntryTransactionsByRaffleIdv2 = {};
+
+            // Fetch NFT data from the API
+            fetch(apiNFTV2)
+              .then((response) => response.json())
+              .then((data) => {
+                // Process the transaction data to filter ERC-721 transfers
+                const nftTransfers = data.result;
+
+                // Define a function to extract transactions
+                function extractTransactions(transactionData) {
+                  return transactionData.map((tx) => {
+                    return tx; // Return the entire transaction object
+                  });
+                }
+
+                // Extract transactions using the function
+                const transactions = extractTransactions(nftTransfers);
+
+              
+                // Iterate through extractedDataArray to match transactionHash with transactions and add tokenName
+                extractedDataArrayv2.forEach((extractedItem) => {
+                  const matchingItem = transactions.find((item) => item.hash === extractedItem.transactionHash);
+                  if (matchingItem) {
+                    extractedItem.tokenName = matchingItem.tokenName;
+                  }
+                });
+
+                // Log the updated extractedDataArray with tokenNames
+                console.log('Updated extractedDataArray with tokenNames V2:', extractedDataArrayv2);
+
+                // Fetch data from the Etherscan API
+fetch(apiUrlV2)
+  .then((response) => response.json())
+  .then((data) => {
+    const transactions = data.result;
+
+    // Calculate the offset between local timezone and Etherscan's timezone
+    const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
+    const etherscanTimezoneOffset = 0; // Adjust this offset if needed
+
+    // Function to convert Unix timestamps to the Etherscan timezone
+    function convertToEtherscanTimezone(timestamp) {
+      return new Date(
+        timestamp * 1000 + (localTimezoneOffset - etherscanTimezoneOffset) * 60 * 1000
+      );
+    }
+
+    // Function to fetch token balance for an address
+    function fetchTokenBalance(address) {
+      return fetch(`${tokenApiUrl}&address=${address}`)
+        .then((response) => response.json())
+        .then((data) => {
+          return data.result;
+        })
+        .catch((error) => {
+          console.error(`Error fetching token balance for address ${address}:`, error);
+          return '0';
+        });
+    }
+
+    console.log(transactions);
+
+    // Process transactions and sum _numberEntries, valueInEther, and valueInDummy for BuyEntry chart
+    transactions.forEach((transaction) => {
+      if (transaction.input.startsWith(buyEntrySignature)) {
+        // Decode the input data to get _numberEntries and _buyTicketRaffleId
+        const inputData = transaction.input.substring(10); // Remove the function signature
+        const web3 = new Web3();
+        const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
+
+        // Extract _numberEntries, _buyTicketRaffleId, and valueInWei
+        const numberEntries = parseInt(decodedData[1]);
+        const buyTicketRaffleId = decodedData[0];
+        const valueInWei = parseInt(transaction.value);
+        const valueInEther = valueInWei / 1e18; // Convert wei to ether
+
+        // Calculate valueInDummy based on transaction hash match
+        const valueInDummy = sumsByTransactionDummy[transaction.hash] || 0;
+
+        // Check if the buyTicketRaffleId exists in the aggregated data, and initialize if not
+        if (!buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId]) {
+          buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId] = {
+            totalNumberEntries: 0,
+            totalValueInEther: 0,
+            totalValueInDummy: 0,
+            hashes: [], // Initialize an array to store hashes
+           
+            buyTicketRaffleId: buyTicketRaffleId, // Add buyTicketRaffleId to the entry
+          };
+        }
+ 
+        // Add the data to the aggregated BuyEntry transactions for this buyTicketRaffleId
+        buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId].totalNumberEntries += numberEntries;
+        buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId].totalValueInEther += valueInEther;
+        buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId].totalValueInDummy += valueInDummy;
+
+        // Add the hash to the array
+        buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId].hashes.push(transaction.hash);
+
+     // Iterate through extractedDataArray to match topics1Data with buyTicketRaffleId and add tokenName
+extractedDataArrayv2.forEach((extractedItem) => {
+  for (const buyRaffleId in buyEntryTransactionsByRaffleIdv2) {
+    const raffleId = buyEntryTransactionsByRaffleIdv2[buyRaffleId];
+    if (raffleId.buyTicketRaffleId == extractedItem.topics1Data) {
+      raffleId.tokenName = extractedItem.tokenName;
+
+             
+            }
+          }
+        });
+      }
+    });
+    console.log('Updated data V2', buyEntryTransactionsByRaffleIdv2);
+    // Continue with your code ...
+
+
+
+        
+    const raffleIdsv2 = Object.keys(buyEntryTransactionsByRaffleIdv2);
+        const totalNumberEntriesDatav2 = raffleIdsv2.map((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].totalValueInEther);
+      
+
+       // Filter raffleIds to include only entries with a tokenName
+const labeledRaffleIdsv2 = raffleIdsv2.filter((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].tokenName);
+
+// Sort labeledRaffleIds based on totalValueInEther in descending order
+labeledRaffleIdsv2.sort((a, b) => buyEntryTransactionsByRaffleIdv2[b].totalValueInEther - buyEntryTransactionsByRaffleIdv2[a].totalValueInEther);
+
+// Filter out entries with totalValueInEther less than 0.02
+const filteredRaffleIdsv2 = labeledRaffleIdsv2.filter((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].totalValueInEther >= 0.02);
+
+// Create the chart
+const ctxv2 = document.getElementById("VIPRatioV2").getContext("2d");
+new Chart(ctxv2, {
+    type: "bar",
+    data: {
+        labels: filteredRaffleIdsv2.map((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].tokenName),
+        datasets: [
+            {
+                label: "ETH Spent",
+                data: filteredRaffleIdsv2.map((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].totalValueInEther),
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+                totalNumberEntries: filteredRaffleIdsv2.map((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].totalNumberEntries), // Store totalNumberEntries as an additional property
+            },
+        ],
+    },
+    options: {
+      scales: {
+          x: {
+            type: 'category',
+            title: {
+              display: true,
+              text: 'Collections', // X-axis title
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'ETH', // Y-axis title
+            },
+          },
+        },
+        plugins: {
+          
+          
+                title: {
+                display: true, // Set to true to display the title
+                text: "RaflDEX V2_3 VIP STATS", // Specify the title text
+                fontSize: 720, // You can adjust the font size as needed
+                color: "greenyellow", // Specify the title color
+                padding: 20, // Add padding to the title
+                fontStyle: "italic", // Apply italic style to the title
+                font: {
+                    weight: 'bold', // Apply bold style to the title
+                },
+            },
+            legend: {
+                display: false,
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        const dataset = context.dataset;
+                        const label = dataset.label || "";
+                        if (label === "ETH Spent") {
+                            const ethValue = context.parsed.y.toFixed(2);
+                            const totalNumberEntries = dataset.totalNumberEntries[context.dataIndex]; // Get totalNumberEntries for the current bar
+                            return `${label}: ${ethValue} ETH\nTotal Entries: ${totalNumberEntries}`;
+                        } else {
+                            const value = context.parsed.y.toFixed(2);
+                            return `${label}: ${value}`;
+                        }
+                    },
+                },
+            },
+        },
+    },
+});
+
+
+
+  })
+              })
+              .catch((error) => {
+                console.error('Error fetching NFT data from the API:', error);
+              });
+          })
+          .catch((error) => {
+            console.error('Error fetching data from the logs API:', error);
+          });
+      })
+      .catch((error) => {
+        console.error('Error fetching data from the dummy API:', error);
+      });
+  })
+  .catch((error) => {
+    console.error('Error fetching data from the Etherscan API:', error);
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const raffleIds = Object.keys(buyEntryTransactionsByRaffleId);
+        const totalNumberEntriesData = raffleIds.map((raffleId) => buyEntryTransactionsByRaffleId[raffleId].totalValueInEther);
+      
+
+       // Filter raffleIds to include only entries with a tokenName
+const labeledRaffleIds = raffleIds.filter((raffleId) => buyEntryTransactionsByRaffleId[raffleId].tokenName);
+
+// Sort labeledRaffleIds based on totalValueInEther in descending order
+labeledRaffleIds.sort((a, b) => buyEntryTransactionsByRaffleId[b].totalValueInEther - buyEntryTransactionsByRaffleId[a].totalValueInEther);
+
+// Filter out entries with totalValueInEther less than 0.02
+const filteredRaffleIds = labeledRaffleIds.filter((raffleId) => buyEntryTransactionsByRaffleId[raffleId].totalValueInEther >= 0.02);
+
+// Create the chart
+const ctx = document.getElementById("VIPRatioV1").getContext("2d");
+new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels: filteredRaffleIds.map((raffleId) => buyEntryTransactionsByRaffleId[raffleId].tokenName),
+        datasets: [
+            {
+                label: "ETH Spent",
+                data: filteredRaffleIds.map((raffleId) => buyEntryTransactionsByRaffleId[raffleId].totalValueInEther),
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+                totalNumberEntries: filteredRaffleIds.map((raffleId) => buyEntryTransactionsByRaffleId[raffleId].totalNumberEntries),
+            },
+        ],
+    },
+    options: {
+      scales: {
+          x: {
+            type: 'category',
+            title: {
+              display: true,
+              text: 'Collections', // X-axis title
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'ETH', // Y-axis title
+            },
+          },
+        },
+        plugins: {
+            title: {
+                display: true, // Set to true to display the title
+                text: "RaflDEX V2_2 VIP STATS", // Specify the title text
+                fontSize: 720, // You can adjust the font size as needed
+                color: "greenyellow", // Specify the title color
+                padding: 20, // Add padding to the title
+                fontStyle: "italic", // Apply italic style to the title
+                font: {
+                    weight: 'bold', // Apply bold style to the title
+                },
+            },
+            legend: {
+                display: false,
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        const dataset = context.dataset;
+                        const label = dataset.label || "";
+                        if (label === "ETH Spent") {
+                            const ethValue = context.parsed.y.toFixed(2);
+                            const totalNumberEntries = dataset.totalNumberEntries[context.dataIndex];
+                            return `${label}: ${ethValue} ETH\nTotal Entries: ${totalNumberEntries}`;
+                        } else {
+                            const value = context.parsed.y.toFixed(2);
+                            return `${label}: ${value}`;
+                        }
+                    },
+                },
+            },
+        },
+    },
+});
+
+
+
+
+        // Log the updated BuyEntry Transactions By RaffleId
+        console.log('Updated BuyEntry Transactions By RaffleId:', buyEntryTransactionsByRaffleIdv);
+      })
+      .catch((error) => {
+        console.error('Error fetching and processing data:', error);
+      });
+  })
+  .catch((error) => {
+    console.error('Error fetching logs:', error);
+  });})
+
+  })
+  
+})
+
+
+
+
+
+
+
+</script>
+  </html>
