@@ -59,14 +59,11 @@ document.getElementById('connect-button').addEventListener('click', event => {
             let button = event.target;
             ethereum.request({method: 'eth_requestAccounts'}).then(accounts => {
                 account = accounts[0];
-               console.log(account);
                button.textContent = account;
 
                 ethereum.request({method: 'eth_getBalance' , params: [account, 'latest']}).then(result => {
-                    console.log(result);
                     let wei = parseInt(result,16);
                     let balance = wei / (10**18);
-                    console.log(balance + " ETH");
                     
                 });
             });
@@ -194,7 +191,6 @@ fetch(apiUrl)
                         });
                     }
 
-                    console.log(transactions)
 
 
 
@@ -224,7 +220,6 @@ transactions.forEach((transaction) => {
   }
 });
 
-console.log('Winner ID:', winnerId);
 
 
 
@@ -264,7 +259,6 @@ transactions.forEach((transaction) => {
   }
 });
 
-console.log('Winner ID hashes:', winnerIdhashes);
 
 // Initialize an object to store sums by transaction and transaction hashes
 const sumsByTransactionDummy = {};
@@ -279,12 +273,10 @@ function fetchDataAndProcess(apiDummyUrl, delay) {
         .then((dresponse) => dresponse.json())
         .then((ddata) => {
           // Process the data returned by the API
-          console.log('ddata', ddata);
 
           // Extract value data from the transactions
           const dtransactions = ddata.result;
 
-          console.log('dtransaction', dtransactions);
 
           // Iterate through transactions and retrieve the value data and hash
           dtransactions.forEach((transaction) => {
@@ -316,8 +308,6 @@ const apiRequestDelay = 10000; // You can adjust this value as needed
 fetchDataAndProcess(apiDummyUrl)
   .then(({ sumsByTransactionDummy, transactionDummyHashes }) => {
     // Log the data returned by the function
-    console.log('Sums by Transaction in Dummy:', sumsByTransactionDummy);
-    console.log('Transaction Dummy Hashes:', transactionDummyHashes);
 
 
 
@@ -371,14 +361,12 @@ axios.get(apiLogsUrl)
         const transactions = extractTransactions(nftTransfers);
 
         // Log the extracted data
-        console.log(JSON.stringify(transactions, null, 2));
 
 
         // Extract transactions using the function
     const extractedData = extractTransactions(nftTransfers);
 
     // Log the extracted data
-    console.log(JSON.stringify(extractedData, null, 2));
 
 
 
@@ -391,7 +379,6 @@ axios.get(apiLogsUrl)
         });
 
         // Log the updated extractedDataArray with tokenNames
-        console.log('Updated extractedDataArray with tokenNames:', extractedDataArray);
 
      
 
@@ -423,7 +410,6 @@ axios.get(apiLogsUrl)
                         });
                     }
 
-                    console.log(transactions)
 
 
            // ...
@@ -533,7 +519,6 @@ fetch(apiUrlV2)
         });
     }
 
-    console.log(transactions);
 
     // Process transactions and sum _numberEntries for BuyEntry chart
     const winnerIdv2 = {};
@@ -563,7 +548,6 @@ fetch(apiUrlV2)
       }
     });
 
-    console.log('Winner ID V2:', winnerIdv2);
 
 
         // ...
@@ -572,8 +556,6 @@ fetch(apiUrlV2)
     fetchDataAndProcess(apiDummyUrlV2, apiRequestDelay)
       .then(({ sumsByTransactionDummyv2, transactionDummyHashesv2 }) => {
         // Log the data returned by the function
-        console.log('Sums by Transaction in Dummy V2:', sumsByTransactionDummyv2);
-        console.log('Transaction Dummy Hashes V2:', transactionDummyHashesv2);
 
         // Initialize an array to store the extracted data
         const extractedDataArrayv2 = [];
@@ -634,7 +616,6 @@ fetch(apiUrlV2)
                 });
 
                 // Log the updated extractedDataArray with tokenNames
-                console.log('Updated extractedDataArray with tokenNames V2:', extractedDataArrayv2);
 
                 // Fetch data from the Etherscan API
 fetch(apiUrlV2)
@@ -666,7 +647,6 @@ fetch(apiUrlV2)
         });
     }
 
-    console.log(transactions);
 
     // Process transactions and sum _numberEntries, valueInEther, and valueInDummy for BuyEntry chart
     transactions.forEach((transaction) => {
@@ -718,7 +698,6 @@ extractedDataArrayv2.forEach((extractedItem) => {
         });
       }
     });
-    console.log('Updated data V2', buyEntryTransactionsByRaffleIdv2);
     // Continue with your code ...
 
 
@@ -945,7 +924,6 @@ new Chart(ctx, {
 
 
         // Log the updated BuyEntry Transactions By RaffleId
-        console.log('Updated BuyEntry Transactions By RaffleId:', buyEntryTransactionsByRaffleIdv);
       })
       .catch((error) => {
         console.error('Error fetching and processing data:', error);
