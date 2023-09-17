@@ -204,4 +204,23 @@ canvas {
     background-color: red;
     color: white;
   }
-  
+  /* Add this CSS to your styles.css or in a <style> tag in your HTML */
+nav {
+    text-align: center;
+    background-color: black; /* Background color for the navigation bar */
+}
+
+nav ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+nav li {
+    display: inline;
+    margin-right: 20px; /* Adjust the spacing between navigation links */
+}
+
+nav a {
+    text-decoration: none;
+    color: white; /* Text color for the navigation links */
+}
