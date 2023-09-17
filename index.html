@@ -22,7 +22,8 @@
 
 </head>
 <body>
-<nav>
+
+    <nav>
     <button id="rafldex-button" class="rafldex-button1"><img src="https://www.rafldex.io/_next/static/media/rafldex-banner-logo.c5c4ed98.svg" width="110"></button>
       
     <button id="GHN-button" class="GHN-button1"><img src="ghnicon.png" width="60" height="60"></button>
@@ -82,6 +83,14 @@
         <canvas id="dummySpentPerDayChart"></canvas>
     </div>
 
+
+       <!-- Add a 3px separation -->
+       <div style="height: 3px;"></div>
+
+       <!-- Container for the Create Raffle chart -->
+       <div class="chart-container" style="height: 400px;">
+         <canvas id="dextSpentPerDayChart"></canvas>
+     </div>
    
     
         <!-- Add a 3px separation -->
@@ -183,6 +192,7 @@ document.getElementById('mutant-button').addEventListener('click', event => {
         // Specify the contract addresses
         const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92';
         const contractAddressV2 = '0x6C02eb58354C0f53D4BA024B1b2b94FA7B1b9389'
+        const contractAddressV3 = '0xB09B88ac29Dd39B4a719650C44aC787Fa2D2D7a3'
         const tokenContractAddress = '0xc084a29dd0c9436568435938b1c6c5af4f5c035f';
 
         // Function signature of the "buyEntry" function
@@ -201,18 +211,21 @@ document.getElementById('mutant-button').addEventListener('click', event => {
 
         // Construct the Etherscan API URL to fetch transactions
         const apiUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddress}&apikey=${etherscanApiKey}`;
-
-                // Construct the Etherscan API URL to fetch transactions
-                const apiUrlV2 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+        const apiUrlV2 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+        const apiUrlV3 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV3}&apikey=${etherscanApiKey}`;
 
                 const apiDummyUrl = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddress}&apikey=${etherscanApiKey}`;
-
                 const apiDummyUrlV2 = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+                const apiDummyUrlV3 = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddressV3}&apikey=${etherscanApiKey}`;
                 
                 const apiNFT = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddress}&apikey=${etherscanApiKey}`;
+                const apiNFTV2 = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
+                const apiNFTV3 = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddressV3}&apikey=${etherscanApiKey}`;
 
                 // Define the API URL
         const apiLogsUrl = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddress}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
+        const apiLogsUrlV2 = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddressV2}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
+        const apiLogsUrlV3 = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddressV2}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
 
 
 
@@ -247,8 +260,27 @@ document.getElementById('mutant-button').addEventListener('click', event => {
         let createRaffleTransactionsByDayV2 = {};
         let cancelRaffleTransactionsByDayV2 = {};
         let setWinnerRaffleByDayV2 = {};
-        
         let sumsByDayInDummyv2 = {};
+        let buyEntryGhnHoldersCountV3 = {};
+        let buyEntryAhcHoldersCountV3 = {};
+        let buyEntryNonHoldersCountV3 = {};
+        let buyEntryBAYCHoldersCountV3 = {};
+        let buyEntryMAYCHoldersCountV3 = {};
+        let buyEntryMGHNHoldersCountV3 = {};
+        let buyEntryAKCBHoldersCountV3 = {};
+        let buyEntryThePlagueHoldersCountV3 = {};
+        let buyEntrySappySealsHoldersCountV3 = {};
+        let sumsByDayInEtherV3 = {};
+        let buyEntryTransactionsByDayV3 = {};
+        let buyEntryTotalEntriesByDayV3 = {};
+        let createRaffleTransactionsByDayV3 = {};
+        let cancelRaffleTransactionsByDayV3 = {};
+        let setWinnerRaffleByDayV3 = {};
+        let sumsByDayInDummyv3 = {};
+        let buyEntryTicketsByMonthV3 = {};
+        let sumsByDayInDextv3 = {};
+        let valueInDextv3 = {};
+        let valueInDummyv3 = {};
         
         
         
@@ -475,7 +507,7 @@ fetch(apiDummyUrlV2)
       
 
     });
-
+    console.log('sumsByDayInDummyv2', sumsByDayInDummyv2);
     // Log the sumsByDayInDummy object outside the loop
   })
   .catch((error) => {
@@ -694,7 +726,410 @@ fetch('ghn.csv')
 
 
 
+         // Fetch data from the Etherscan API
+         fetch(apiUrlV3)
+            .then((response) => response.json())
+            .then((data) => {
+                const transactions = data.result;
 
+                // Calculate the offset between local timezone and Etherscan's timezone
+                const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
+                const etherscanTimezoneOffset = 0; // Adjust this offset if needed
+
+                // Function to convert Unix timestamps to the Etherscan timezone
+                function convertToEtherscanTimezone(timestamp) {
+                    return new Date((timestamp * 1000) + ((localTimezoneOffset - etherscanTimezoneOffset) * 60 * 1000));
+                }
+
+                // Function to fetch token balance for an address
+                function fetchTokenBalance(address) {
+                    return fetch(`${tokenApiUrl}&address=${address}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            return data.result;
+                        })
+                        .catch((error) => {
+                            console.error(`Error fetching token balance for address ${address}:`, error);
+                            return '0';
+                        });
+                    }
+
+
+
+                // Fetch addresses of BuyEntry transactions
+                const buyEntryAddresses = transactions
+                    .filter((transaction) => transaction.input.startsWith(buyEntrySignature))
+                    .map((transaction) => transaction.from.toLowerCase()); // Convert addresses to lowercase for case-insensitive comparison
+                
+                 
+
+
+
+                                      // Process transactions and group by day for BuyEntry chart
+                                
+                                      transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+                    if (transaction.input.startsWith(buyEntrySignature)) {
+                        if (buyEntryTransactionsByDayV3[day]) {
+                            buyEntryTransactionsByDayV3[day]++;
+                        } else {
+                            buyEntryTransactionsByDayV3[day] = 1;
+                        }
+                    }
+                });
+
+
+                                 // Process transactions and sum _numberEntries for BuyEntry chart
+    
+    transactions.forEach((transaction) => {
+        const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+        const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+        if (transaction.input.startsWith(buyEntrySignature)) {
+            // Decode the input data to get _numberEntries
+            const inputData = transaction.input.substring(10); // Remove the function signature
+            const web3 = new Web3();
+            const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
+
+            // Extract _numberEntries and sum it up
+            const numberEntries = parseInt(decodedData[1]);
+            
+            if (buyEntryTotalEntriesByDayV3[day]) {
+                buyEntryTotalEntriesByDayV3[day] += numberEntries;
+            } else {
+                buyEntryTotalEntriesByDayV3[day] = numberEntries;
+            }
+        }
+    });
+
+                    
+
+                    
+
+          // Process transactions and sum values per day in ether
+          
+transactions.forEach((transaction) => {
+  const timestamp = parseInt(transaction.timeStamp);
+  const date = new Date(timestamp * 1000); // Convert timestamp to Date object
+  const dayKey = date.toISOString().split('T')[0]; // Get the YYYY-MM-DD part as the key
+
+  const valueInWei = parseInt(transaction.value);
+  const valueInEther = valueInWei / 1e18; // Convert wei to ether
+
+if (transaction.input.startsWith(buyEntrySignature)) 
+if (sumsByDayInEtherV3[dayKey]) {
+    sumsByDayInEtherV3[dayKey] += valueInEther;
+  } else {
+    sumsByDayInEtherV3[dayKey] = valueInEther;
+  }
+});
+
+
+
+// Initialize objects to store sums by day
+const sumsByDayInDummyv3 = {};
+const sumsByDayInDextv3 = {};
+
+// Make an HTTP GET request to the API
+fetch(apiDummyUrlV3)
+  .then((dDresponse) => dDresponse.json())
+  .then((dDdatav3) => {
+    // Process the data returned by the API
+
+    // Extract value data from the transactions
+    const dDtransactions = dDdatav3.result;
+
+
+
+    // Iterate through transactions and retrieve the value data
+    dDtransactions.forEach((transaction) => {
+      const timestamp = parseInt(transaction.timeStamp);
+      const date = new Date(timestamp * 1000); // Convert timestamp to Date object
+      const dayKey = date.toISOString().split('T')[0]; // Get the YYYY-MM-DD part as the key
+
+      const tokenSymbol = transaction.tokenSymbol;
+      const valueInWeiv3 = parseInt(transaction.value);
+
+      if (tokenSymbol === "DUMMY") {
+        const valueInDummyv3 = valueInWeiv3 / 1e18; // Convert wei to ether
+
+        if (sumsByDayInDummyv3[dayKey]) {
+          sumsByDayInDummyv3[dayKey] += valueInDummyv3;
+        } else {
+          sumsByDayInDummyv3[dayKey] = valueInDummyv3;
+        }
+      } else if (tokenSymbol === "DEXT") {
+        const valueInDextv3 = valueInWeiv3 / 1e18; // Adjust this conversion factor as needed
+
+        if (sumsByDayInDextv3[dayKey]) {
+          sumsByDayInDextv3[dayKey] += valueInDextv3;
+        } else {
+          sumsByDayInDextv3[dayKey] = valueInDextv3;
+        }
+      }
+
+    
+    });
+
+
+;
+// Assuming you have already fetched and processed the data
+
+    // Define the data for the chart
+    const labelsdx = Object.keys(sumsByDayInDextv3);
+    const dextdata = labelsdx.map((dayKey) => sumsByDayInDextv3[dayKey]);
+
+    // Get a reference to the canvas element
+    const ctxd = document.getElementById('dextSpentPerDayChart').getContext('2d');
+
+    // Create the chart
+    new Chart(ctxd, {
+      type: 'bar', // Bar chart
+      data: {
+        labels: labelsdx, // X-axis labels (dates)
+        datasets: [{
+          label: 'DEXT Spent on Tickets',
+          data: dextdata, // Y-axis data (transaction counts)
+          backgroundColor: 'rgba(39, 226, 245, 0.8)', // Bar color
+          borderColor: 'rgba(39, 226, 245, 0.8)', // Border color of bars
+          borderWidth: 1, // Border width of bars
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'category',
+            title: {
+              display: true,
+              text: 'Day', // X-axis title
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'DEXT', // Y-axis title
+            },
+          },
+        },
+      },
+    });
+  })
+  .catch((error) => {
+    console.error('Error fetching data from Etherscan:', error);
+  });
+
+
+                               // Process transactions and group by day for CreateRaffle chart
+               
+                               transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+                    if (createRaffleSignatures.some((signature) => transaction.input.includes(signature))) {
+                        if (createRaffleTransactionsByDayV3[day]) {
+                            createRaffleTransactionsByDayV3[day]++;
+                        } else {
+                            createRaffleTransactionsByDayV3[day] = 1;
+                        }
+                    }
+                });
+                
+               
+              // Process transactions and group by day for CancelRaffle chart
+               
+                transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+                    if (transaction.input.startsWith(cancelRaffleSignature)) {
+                        if (cancelRaffleTransactionsByDayV3[day]) {
+                            cancelRaffleTransactionsByDayV3[day]++;
+                        } else {
+                            cancelRaffleTransactionsByDayV3[day] = 1;
+                        }
+                    }
+                });
+
+    // Process transactions and group by day for SetWinner by Day chart
+                
+    transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const day = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}-${timestamp.getDate().toString().padStart(2, '0')}`;
+
+                    if (transaction.input.startsWith(setWinnerRaffleSignature)) {
+                        if (setWinnerRaffleByDayV3[day]) {
+                            setWinnerRaffleByDayV3[day]++;
+                        } else {
+                            setWinnerRaffleByDayV3[day] = 1;
+                        }
+                    }
+                });
+
+            
+// Load and parse the CSV file
+fetch('ghn.csv')
+    .then((response) => response.text())
+    .then((csvData) => {
+        // Use PapaParse to parse the CSV data
+        Papa.parse(csvData, {
+            header: true, // Treat the first row as headers
+            dynamicTyping: true, // Parse numbers as numbers
+            skipEmptyLines: true, // Skip empty lines
+            complete: function (results) {
+
+                // Create sets for GHN, AHC, and BAYC addresses
+                const ghnAddresses = new Set();
+                const ahcAddresses = new Set();
+                const baycAddresses = new Set();
+                const maycAddresses = new Set();
+                const mghnAddresses = new Set();
+                const akcbAddresses = new Set();
+                const theplagueAddresses = new Set();
+                const ssAddresses = new Set ();
+
+                results.data.forEach((row) => {
+                    const ghnAddress = row['GHNHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const ahcAddress = row['AHCHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const baycAddress = row['BAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const maycAddress = row['MAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const mghnAddress = row['MGHNHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const akcbAddress = row['AKCBHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const theplagueAddress = row['ThePlagueHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    const ssAddress = row['SSHolderAddress']?.substring(0, 42)?.toLowerCase();
+                    if (ghnAddress) {
+                        ghnAddresses.add(ghnAddress);
+                    }
+                    if (ahcAddress) {
+                        ahcAddresses.add(ahcAddress);
+                    }
+
+                    if (baycAddress) {
+                        baycAddresses.add(baycAddress);
+                    }
+                    if (maycAddress) {
+                        maycAddresses.add(maycAddress);
+                    }
+
+                    if (mghnAddress) {
+                        mghnAddresses.add(mghnAddress);
+                    }
+
+                    if (akcbAddress) {
+                        akcbAddresses.add(akcbAddress);
+                    }
+
+                    if (theplagueAddress) {
+                        theplagueAddresses.add(theplagueAddress);
+                    }
+
+                        if (ssAddress) {
+                        ssAddresses.add(ssAddress);
+                    }
+
+                    
+                });
+
+                transactions.forEach((transaction) => {
+                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
+                    const month = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                    if (transaction.input.startsWith(buyEntrySignature)) {
+                        const address = transaction.from.toLowerCase();
+                        const isGHN = ghnAddresses.has(address);
+                        const isAHC = ahcAddresses.has(address);
+                        const isBAYC = baycAddresses.has(address);
+                        const isMAYC = maycAddresses.has(address);
+                        const isMGHN = mghnAddresses.has(address);
+                        const isAKCB = akcbAddresses.has(address);
+                        const isThePlague = theplagueAddresses.has(address);
+                        const isSS = ssAddresses.has(address);
+                        
+
+                        if (isGHN) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryGhnHoldersCountV3[month]) {
+                                buyEntryGhnHoldersCountV3[month] = 0;
+                            }
+                            buyEntryGhnHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+
+                        if (isAHC) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryAhcHoldersCountV3[month]) {
+                                buyEntryAhcHoldersCountV3[month] = 0;
+                            }
+                            buyEntryAhcHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+
+
+                        if (isBAYC) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryBAYCHoldersCountV3[month]) {
+                                buyEntryBAYCHoldersCountV3[month] = 0;
+                            }
+                            buyEntryBAYCHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+
+                        if (isMAYC) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryMAYCHoldersCountV3[month]) {
+                                buyEntryMAYCHoldersCountV3[month] = 0;
+                            }
+                            buyEntryMAYCHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+                        if (isMGHN) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryMGHNHoldersCountV3[month]) {
+                                buyEntryMGHNHoldersCountV3[month] = 0;
+                            }
+                            buyEntryMGHNHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+                     
+                        if (isAKCB) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryAKCBHoldersCountV3[month]) {
+                                buyEntryAKCBHoldersCountV3[month] = 0;
+                            }
+                            buyEntryAKCBHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+                        if (isThePlague) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntryThePlagueHoldersCountV3[month]) {
+                                buyEntryThePlagueHoldersCountV3[month] = 0;
+                            }
+                            buyEntryThePlagueHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+
+                        if (isSS) {
+                            // Initialize the count for this month if it doesn't exist
+                            if (!buyEntrySappySealsHoldersCountV3[month]) {
+                                buyEntrySappySealsHoldersCountV3[month] = 0;
+                            }
+                            buyEntrySappySealsHoldersCountV3[month]++; // Increment the count for this month
+                        } 
+                     
+                                                
+                    }
+
+                 
+
+                    // Increment the buyEntryTicketsByMonth count for this month
+                    if (!buyEntryTicketsByMonthV3[month]) {
+                        buyEntryTicketsByMonthV3[month] = 0;
+                    }
+                    buyEntryTicketsByMonthV3[month]++;
+                });
+
+
+
+            
+                    
+            }})})})
 
 
 
@@ -788,6 +1223,14 @@ for (const dayKey in buyEntryTransactionsByDayV2) {
     }
 }
 
+// Iterate over the keys in sumsByDayInEtherV3
+for (const dayKey in buyEntryTransactionsByDayV3) {
+    if (buyEntryTransactionsByDayV2.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV3 to the combinedSumsByDayInEther
+        combinedbuyEntryTransactionsByDay[dayKey] = (combinedbuyEntryTransactionsByDay[dayKey] || 0) + buyEntryTransactionsByDayV3[dayKey];
+    }
+}
+
 // Now combinedSumsByDayInEther contains the combined sums
 
 
@@ -874,6 +1317,14 @@ for (const dayKey in buyEntryTotalEntriesByDayV2) {
     }
 }
 
+// Iterate over the keys in sumsByDayInEtherV3
+for (const dayKey in buyEntryTotalEntriesByDayV3) {
+    if (buyEntryTotalEntriesByDayV3.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
+        combinedbuyEntryTotalEntriesByDay[dayKey] = (combinedbuyEntryTotalEntriesByDay[dayKey] || 0) + buyEntryTotalEntriesByDayV3[dayKey];
+    }
+}
+
 // Now combinedSumsByDayInEther contains the combined sums
 
 
@@ -925,6 +1376,14 @@ for (const dayKey in sumsByDayInEtherV2) {
     }
 }
 
+// Iterate over the keys in sumsByDayInEtherV3
+for (const dayKey in sumsByDayInEtherV3) {
+    if (sumsByDayInEtherV3.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
+        combinedSumsByDayInEther[dayKey] = (combinedSumsByDayInEther[dayKey] || 0) + sumsByDayInEtherV3[dayKey];
+    }
+}
+
 // Now combinedSumsByDayInEther contains the combined sums
 
                     
@@ -958,11 +1417,40 @@ fetch(apiDummyUrl)
     });
 
 
-    // Assuming you have already fetched and processed the data
+// Initialize a new object to store the combined sums
+const combinedSumsByDayInDummy = {};
+
+// Iterate over the keys in sumsByDayInEther
+for (const dayKey in sumsByDayInDummy) {
+    if (sumsByDayInDummy.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEther to the combinedSumsByDayInEther
+        combinedSumsByDayInDummy[dayKey] = (combinedSumsByDayInDummy[dayKey] || 0) + sumsByDayInDummy[dayKey];
+    }
+}
+
+// Iterate over the keys in sumsByDayInEtherV2
+for (const dayKey in sumsByDayInDummyv2) {
+    if (sumsByDayInDummyv2.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
+        combinedSumsByDayInDummy[dayKey] = (combinedSumsByDayInDummy[dayKey] || 0) + sumsByDayInDummyv2[dayKey];
+    }
+}
+
+// Iterate over the keys in sumsByDayInEtherV3
+for (const dayKey in sumsByDayInDummyv3) {
+    if (sumsByDayInDummyv3.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
+        combinedSumsByDayInDummy[dayKey] = (combinedSumsByDayInDummy[dayKey] || 0) + sumsByDayInDummyv3[dayKey];
+    }
+}
+
+console.log('combinedSumsByDayInDummy', combinedSumsByDayInDummy);
+
+// Assuming you have already fetched and processed the data
 
     // Define the data for the chart
-    const labelsd = Object.keys(sumsByDayInDummy);
-    const dummydata = labelsd.map((dayKey) => sumsByDayInDummy[dayKey]);
+    const labelsd = Object.keys(combinedSumsByDayInDummy);
+    const dummydata = labelsd.map((dayKey) => combinedSumsByDayInDummy[dayKey]);
 
     // Get a reference to the canvas element
     const ctxd = document.getElementById('dummySpentPerDayChart').getContext('2d');
@@ -1007,6 +1495,7 @@ fetch(apiDummyUrl)
   });
 
 
+  
 
 
 
@@ -1031,6 +1520,11 @@ const createRaffleTransactionsByDay = {};
                         }
                     }
                 });
+
+
+
+
+                
               
 
                                     // Initialize a new object to store the combined sums
@@ -1049,6 +1543,15 @@ for (const dayKey in createRaffleTransactionsByDayV2) {
     if (createRaffleTransactionsByDayV2.hasOwnProperty(dayKey)) {
         // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
         combinedcreateRaffleTransactionsByDay[dayKey] = (combinedcreateRaffleTransactionsByDay[dayKey] || 0) + createRaffleTransactionsByDayV2[dayKey];
+    }
+}
+
+
+// Iterate over the keys in sumsByDayInEtherV3
+for (const dayKey in createRaffleTransactionsByDayV3) {
+    if (createRaffleTransactionsByDayV3.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV3 to the combinedSumsByDayInEther
+        combinedcreateRaffleTransactionsByDay[dayKey] = (combinedcreateRaffleTransactionsByDay[dayKey] || 0) + createRaffleTransactionsByDayV3[dayKey];
     }
 }
 
@@ -1096,6 +1599,14 @@ for (const dayKey in cancelRaffleTransactionsByDayV2) {
     }
 }
 
+// Iterate over the keys in sumsByDayInEtherV3
+for (const dayKey in cancelRaffleTransactionsByDayV3) {
+    if (cancelRaffleTransactionsByDayV3.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV3 to the combinedSumsByDayInEther
+        combinedcancelRaffleTransactionsByDay[dayKey] = (combinedcancelRaffleTransactionsByDay[dayKey] || 0) + cancelRaffleTransactionsByDayV3[dayKey];
+    }
+}
+
 // Now combinedSumsByDayInEther contains the combined sums
 
 
@@ -1134,6 +1645,14 @@ for (const dayKey in setWinnerRaffleByDayV2) {
     if (setWinnerRaffleByDayV2.hasOwnProperty(dayKey)) {
         // Add the value from sumsByDayInEtherV2 to the combinedSumsByDayInEther
         combinedSetWinnerRaffleByDay[dayKey] = (combinedSetWinnerRaffleByDay[dayKey] || 0) + setWinnerRaffleByDayV2[dayKey];
+    }
+}
+
+// Iterate over the keys in sumsByDayInEtherV3
+for (const dayKey in setWinnerRaffleByDayV3) {
+    if (setWinnerRaffleByDayV3.hasOwnProperty(dayKey)) {
+        // Add the value from sumsByDayInEtherV3 to the combinedSumsByDayInEther
+        combinedSetWinnerRaffleByDay[dayKey] = (combinedSetWinnerRaffleByDay[dayKey] || 0) + setWinnerRaffleByDayV3[dayKey];
     }
 }
 
@@ -1315,98 +1834,221 @@ const combinedSappySealsHoldersCount = {};
 
 // ... Initialize combined objects for other counts ...
 
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntryGhnHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntryGhnHoldersCountV2.hasOwnProperty(month)) {
-        combinedGhnHoldersCount[month] = (buyEntryGhnHoldersCount[month] || 0) + (buyEntryGhnHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntryGhnHoldersCountV2.hasOwnProperty(month) &&
+        buyEntryGhnHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedGhnHoldersCount[month] =
+            (buyEntryGhnHoldersCount[month] || 0) +
+            (buyEntryGhnHoldersCountV2[month] || 0) +
+            (buyEntryGhnHoldersCountV3[month] || 0);
+    } else if (buyEntryGhnHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedGhnHoldersCount[month] =
+            (buyEntryGhnHoldersCount[month] || 0) +
+            (buyEntryGhnHoldersCountV2[month] || 0);
+    } else if (buyEntryGhnHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedGhnHoldersCount[month] =
+            (buyEntryGhnHoldersCount[month] || 0) +
+            (buyEntryGhnHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedGhnHoldersCount[month] = buyEntryGhnHoldersCount[month] || 0;
     }
 }
 
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntryAhcHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntryAhcHoldersCountV2.hasOwnProperty(month)) {
-        combinedAhcHoldersCount[month] = (buyEntryAhcHoldersCount[month] || 0) + (buyEntryAhcHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntryAhcHoldersCountV2.hasOwnProperty(month) &&
+        buyEntryAhcHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedAhcHoldersCount[month] =
+            (buyEntryAhcHoldersCount[month] || 0) +
+            (buyEntryAhcHoldersCountV2[month] || 0) +
+            (buyEntryAhcHoldersCountV3[month] || 0);
+    } else if (buyEntryAhcHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedAhcHoldersCount[month] =
+            (buyEntryAhcHoldersCount[month] || 0) +
+            (buyEntryAhcHoldersCountV2[month] || 0);
+    } else if (buyEntryAhcHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedAhcHoldersCount[month] =
+            (buyEntryAhcHoldersCount[month] || 0) +
+            (buyEntryAhcHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedAhcHoldersCount[month] = buyEntryAhcHoldersCount[month] || 0;
     }
 }
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntryBAYCHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntryBAYCHoldersCountV2.hasOwnProperty(month)) {
-        combinedBAYCHoldersCount[month] = (buyEntryBAYCHoldersCount[month] || 0) + (buyEntryBAYCHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntryBAYCHoldersCountV2.hasOwnProperty(month) &&
+        buyEntryBAYCHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedBAYCHoldersCount[month] =
+            (buyEntryBAYCHoldersCount[month] || 0) +
+            (buyEntryBAYCHoldersCountV2[month] || 0) +
+            (buyEntryBAYCHoldersCountV3[month] || 0);
+    } else if (buyEntryBAYCHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedBAYCHoldersCount[month] =
+            (buyEntryBAYCHoldersCount[month] || 0) +
+            (buyEntryBAYCHoldersCountV2[month] || 0);
+    } else if (buyEntryBAYCHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedBAYCHoldersCount[month] =
+            (buyEntryBAYCHoldersCount[month] || 0) +
+            (buyEntryBAYCHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedBAYCHoldersCount[month] = buyEntryBAYCHoldersCount[month] || 0;
     }
 }
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntryMAYCHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntryMAYCHoldersCountV2.hasOwnProperty(month)) {
-        combinedMAYCHoldersCount[month] = (buyEntryMAYCHoldersCount[month] || 0) + (buyEntryMAYCHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntryMAYCHoldersCountV2.hasOwnProperty(month) &&
+        buyEntryMAYCHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedMAYCHoldersCount[month] =
+            (buyEntryMAYCHoldersCount[month] || 0) +
+            (buyEntryMAYCHoldersCountV2[month] || 0) +
+            (buyEntryMAYCHoldersCountV3[month] || 0);
+    } else if (buyEntryMAYCHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedMAYCHoldersCount[month] =
+            (buyEntryMAYCHoldersCount[month] || 0) +
+            (buyEntryMAYCHoldersCountV2[month] || 0);
+    } else if (buyEntryMAYCHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedMAYCHoldersCount[month] =
+            (buyEntryMAYCHoldersCount[month] || 0) +
+            (buyEntryMAYCHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedMAYCHoldersCount[month] = buyEntryMAYCHoldersCount[month] || 0;
     }
 }
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntryMGHNHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntryMGHNHoldersCountV2.hasOwnProperty(month)) {
-        combinedMGHNHoldersCount[month] = (buyEntryMGHNHoldersCount[month] || 0) + (buyEntryMGHNHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntryMGHNHoldersCountV2.hasOwnProperty(month) &&
+        buyEntryMGHNHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedMGHNHoldersCount[month] =
+            (buyEntryMGHNHoldersCount[month] || 0) +
+            (buyEntryMGHNHoldersCountV2[month] || 0) +
+            (buyEntryMGHNHoldersCountV3[month] || 0);
+    } else if (buyEntryMGHNHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedMGHNHoldersCount[month] =
+            (buyEntryMGHNHoldersCount[month] || 0) +
+            (buyEntryMGHNHoldersCountV2[month] || 0);
+    } else if (buyEntryMGHNHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedMGHNHoldersCount[month] =
+            (buyEntryMGHNHoldersCount[month] || 0) +
+            (buyEntryMGHNHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedMGHNHoldersCount[month] = buyEntryMGHNHoldersCount[month] || 0;
     }
 }
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntryAKCBHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntryAKCBHoldersCountV2.hasOwnProperty(month)) {
-        combinedAKCBHoldersCount[month] = (buyEntryAKCBHoldersCount[month] || 0) + (buyEntryAKCBHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntryAKCBHoldersCountV2.hasOwnProperty(month) &&
+        buyEntryAKCBHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedAKCBHoldersCount[month] =
+            (buyEntryAKCBHoldersCount[month] || 0) +
+            (buyEntryAKCBHoldersCountV2[month] || 0) +
+            (buyEntryAKCBHoldersCountV3[month] || 0);
+    } else if (buyEntryAKCBHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedAKCBHoldersCount[month] =
+            (buyEntryAKCBHoldersCount[month] || 0) +
+            (buyEntryAKCBHoldersCountV2[month] || 0);
+    } else if (buyEntryAKCBHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedAKCBHoldersCount[month] =
+            (buyEntryAKCBHoldersCount[month] || 0) +
+            (buyEntryAKCBHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedAKCBHoldersCount[month] = buyEntryAKCBHoldersCount[month] || 0;
     }
 }
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntryThePlagueHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntryThePlagueHoldersCountV2.hasOwnProperty(month)) {
-        combinedThePlagueHoldersCount[month] = (buyEntryThePlagueHoldersCount[month] || 0) + (buyEntryThePlagueHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntryThePlagueHoldersCountV2.hasOwnProperty(month) &&
+        buyEntryThePlagueHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedThePlagueHoldersCount[month] =
+            (buyEntryThePlagueHoldersCount[month] || 0) +
+            (buyEntryThePlagueHoldersCountV2[month] || 0) +
+            (buyEntryThePlagueHoldersCountV3[month] || 0);
+    } else if (buyEntryThePlagueHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedThePlagueHoldersCount[month] =
+            (buyEntryThePlagueHoldersCount[month] || 0) +
+            (buyEntryThePlagueHoldersCountV2[month] || 0);
+    } else if (buyEntryThePlagueHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedThePlagueHoldersCount[month] =
+            (buyEntryThePlagueHoldersCount[month] || 0) +
+            (buyEntryThePlagueHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedThePlagueHoldersCount[month] = buyEntryThePlagueHoldersCount[month] || 0;
     }
 }
 
-// Iterate over the months (assuming buyEntryGhnHoldersCount and buyEntryGhnHoldersCountV2 have the same months)
+// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
 for (const month in buyEntrySappySealsHoldersCount) {
-    // Check if the month exists in both objects before summing
-    if (buyEntrySappySealsHoldersCountV2.hasOwnProperty(month)) {
-        combinedSappySealsHoldersCount[month] = (buyEntrySappySealsHoldersCount[month] || 0) + (buyEntrySappySealsHoldersCountV2[month] || 0);
+    // Check if the month exists in all three objects before summing
+    if (
+        buyEntrySappySealsHoldersCountV2.hasOwnProperty(month) &&
+        buyEntrySappySealsHoldersCountV3.hasOwnProperty(month)
+    ) {
+        combinedSappySealsHoldersCount[month] =
+            (buyEntrySappySealsHoldersCount[month] || 0) +
+            (buyEntrySappySealsHoldersCountV2[month] || 0) +
+            (buyEntrySappySealsHoldersCountV3[month] || 0);
+    } else if (buyEntrySappySealsHoldersCountV2.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
+        combinedSappySealsHoldersCount[month] =
+            (buyEntrySappySealsHoldersCount[month] || 0) +
+            (buyEntrySappySealsHoldersCountV2[month] || 0);
+    } else if (buyEntrySappySealsHoldersCountV3.hasOwnProperty(month)) {
+        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
+        combinedSappySealsHoldersCount[month] =
+            (buyEntrySappySealsHoldersCount[month] || 0) +
+            (buyEntrySappySealsHoldersCountV3[month] || 0);
     } else {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, just use the value from buyEntryGhnHoldersCount
+        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
         combinedSappySealsHoldersCount[month] = buyEntrySappySealsHoldersCount[month] || 0;
     }
 }
 
-// Repeat the above process for other counts (AhcHoldersCount, BAYCHoldersCount, etc.)
 
 
-// ... Log combined counts for other categories ...
+
+
 
 
 
@@ -1787,6 +2429,8 @@ new Chart(buyEntryTicketsByMonthCtx, {
 
           
 
+
+            
 
 
     </script>
