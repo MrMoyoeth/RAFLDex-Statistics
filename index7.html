@@ -420,7 +420,7 @@ axios.get(apiLogsUrl)
         extractedDataArray.forEach((extractedItem) => {
           const matchingItem = transactions.find((item) => item.hash == extractedItem.transactionHash);
           if (matchingItem) {
-            extractedItem.tokenName = matchingItem.tokenName;
+            extractedItem.tokenSymbol = matchingItem.tokenSymbol;
           }
         });
 
@@ -502,7 +502,7 @@ extractedDataArray.forEach((extractedItem) => {
   for (const buyRaffleId in buyEntryTransactionsByRaffleId) {
     const raffleId = buyEntryTransactionsByRaffleId[buyRaffleId];
     if (raffleId.buyTicketRaffleId == extractedItem.topics1Data) {
-      raffleId.tokenName = extractedItem.tokenName;
+      raffleId.tokenSymbol = extractedItem.tokenSymbol;
     }
   }
 });
@@ -659,7 +659,7 @@ fetch(apiUrlV2)
                 extractedDataArrayv2.forEach((extractedItem) => {
                   const matchingItem = transactions.find((item) => item.hash == extractedItem.transactionHash);
                   if (matchingItem) {
-                    extractedItem.tokenName = matchingItem.tokenName;
+                    extractedItem.tokenSymbol = matchingItem.tokenSymbol;
 
                     console.log('matchingItem', matchingItem);
                   }
@@ -730,7 +730,7 @@ extractedDataArrayv2.forEach((extractedItem) => {
   for (const buyRaffleId in buyEntryTransactionsByRaffleIdv2) {
     const raffleId = buyEntryTransactionsByRaffleIdv2[buyRaffleId];
     if (raffleId.buyTicketRaffleId == extractedItem.topics1Data) {
-      raffleId.tokenName = extractedItem.tokenName;
+      raffleId.tokenSymbol = extractedItem.tokenSymbol;
              
             }
           }
@@ -965,7 +965,7 @@ console.log('ddtransactions', ddtransactions);
 extractedDataArrayv3.forEach((extractedItem) => {
   const matchingItemv3 = ddtransactions.find((item) => item.hash === extractedItem.transactionHash);
   if (matchingItemv3) {
-    extractedItem.tokenName = matchingItemv3.tokenName;
+    extractedItem.tokenSymbol = matchingItemv3.tokenSymbol;
   } else {
     console.log(`No matching transaction found for transactionHash: ${extractedItem.transactionHash}`);
   }
@@ -1048,7 +1048,7 @@ extractedDataArrayv3.forEach((extractedItem) => {
   for (const buyRaffleId in buyEntryTransactionsByRaffleIdv3) {
     const raffleId = buyEntryTransactionsByRaffleIdv3[buyRaffleId];
     if (raffleId.buyTicketRaffleId == extractedItem.topics1Data) {
-      raffleId.tokenName = extractedItem.tokenName;
+      raffleId.tokenSymbol = extractedItem.tokenSymbol;
     }
   }
 });
@@ -1067,7 +1067,7 @@ const raffleIds = Object.keys(buyEntryTransactionsByRaffleId);
       
 
        // Filter raffleIds to include only entries with a tokenName
-const labeledRaffleIds = raffleIds.filter((raffleId) => buyEntryTransactionsByRaffleId[raffleId].tokenName);
+const labeledRaffleIds = raffleIds.filter((raffleId) => buyEntryTransactionsByRaffleId[raffleId].tokenSymbol);
 
 // Sort labeledRaffleIds based on totalValueInEther in descending order
 labeledRaffleIds.sort((a, b) => buyEntryTransactionsByRaffleId[b].totalValueInEther - buyEntryTransactionsByRaffleId[a].totalValueInEther);
@@ -1080,7 +1080,7 @@ const ctx = document.getElementById("VIPRatioV1").getContext("2d");
 new Chart(ctx, {
     type: "bar",
     data: {
-        labels: filteredRaffleIds.map((raffleId) => buyEntryTransactionsByRaffleId[raffleId].tokenName),
+        labels: filteredRaffleIds.map((raffleId) => buyEntryTransactionsByRaffleId[raffleId].tokenSymbol),
         datasets: [
             {
                 label: "ETH Spent",
@@ -1153,7 +1153,7 @@ const raffleIdsv3 = Object.keys(buyEntryTransactionsByRaffleIdv3);
       
 
        // Filter raffleIds to include only entries with a tokenName
-const labeledRaffleIdsv3 = raffleIdsv3.filter((raffleId) => buyEntryTransactionsByRaffleIdv3[raffleId].tokenName);
+const labeledRaffleIdsv3 = raffleIdsv3.filter((raffleId) => buyEntryTransactionsByRaffleIdv3[raffleId].tokenSymbol);
 
 // Sort labeledRaffleIds based on totalValueInEther in descending order
 labeledRaffleIdsv3.sort((a, b) => buyEntryTransactionsByRaffleIdv3[b].totalValueInEther - buyEntryTransactionsByRaffleIdv3[a].totalValueInEther);
@@ -1166,7 +1166,7 @@ const ctxv3 = document.getElementById("VIPRatioV3").getContext("2d");
 new Chart(ctxv3, {
     type: "bar",
     data: {
-        labels: filteredRaffleIdsv3.map((raffleId) => buyEntryTransactionsByRaffleIdv3[raffleId].tokenName),
+        labels: filteredRaffleIdsv3.map((raffleId) => buyEntryTransactionsByRaffleIdv3[raffleId].tokenSymbol),
         datasets: [
             {
                 label: "ETH Spent",
@@ -1229,7 +1229,7 @@ new Chart(ctxv3, {
       
 
        // Filter raffleIds to include only entries with a tokenName
-const labeledRaffleIdsv2 = raffleIdsv2.filter((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].tokenName);
+const labeledRaffleIdsv2 = raffleIdsv2.filter((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].tokenSymbol);
 
 // Sort labeledRaffleIds based on totalValueInEther in descending order
 labeledRaffleIdsv2.sort((a, b) => buyEntryTransactionsByRaffleIdv2[b].totalValueInEther - buyEntryTransactionsByRaffleIdv2[a].totalValueInEther);
@@ -1242,7 +1242,7 @@ const ctxv2 = document.getElementById("VIPRatioV2").getContext("2d");
 new Chart(ctxv2, {
     type: "bar",
     data: {
-        labels: filteredRaffleIdsv2.map((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].tokenName),
+        labels: filteredRaffleIdsv2.map((raffleId) => buyEntryTransactionsByRaffleIdv2[raffleId].tokenSymbol),
         datasets: [
             {
                 label: "ETH Spent",
@@ -1318,7 +1318,7 @@ raffleIdsC.sort((a, b) => mergedData[b].totalValueInEther - mergedData[a].totalV
 
 // Create an array of objects containing labels, data values, totalNumberEntries, and pricePerTicket
 const chartData = raffleIdsC.map((raffleId) => ({
-    label: mergedData[raffleId].tokenName,
+    label: mergedData[raffleId].tokenSymbol,
     value: mergedData[raffleId].totalValueInEther,
     totalNumberEntries: mergedData[raffleId].totalNumberEntries,
     pricePerTicket: mergedData[raffleId].totalValueInEther / mergedData[raffleId].totalNumberEntries, // Calculate pricePerTicket
@@ -1330,22 +1330,25 @@ const chartData = raffleIdsC.map((raffleId) => ({
 );
 console.log('chartData', chartData);
 
-
 // Create the chart
 const ctx4 = document.getElementById("CombinedChart").getContext("2d");
+
+// Filter the chartData to exclude data points with ETH spent < 0.02
+const filteredChartData = chartData.filter((item) => item.value >= 0.1);
+
 new Chart(ctx4, {
     type: "bar",
     data: {
-        labels: chartData.map((item) => item.label), // Use the labels from chartData
+        labels: filteredChartData.map((item) => item.label), // Use the labels from filteredChartData
         datasets: [
             {
                 label: "ETH Spent",
-                data: chartData.map((item) => item.value), // Use the data values from chartData
+                data: filteredChartData.map((item) => item.value), // Use the data values from filteredChartData
                 backgroundColor: "rgba(75, 192, 192, 0.2)",
                 borderColor: "rgba(75, 192, 192, 1)",
                 borderWidth: 1,
-                totalNumberEntries: chartData.map((item) => item.totalNumberEntries), // Add totalNumberEntries to the dataset
-                pricePerTicket: chartData.map((item) => item.pricePerTicket), // Add pricePerTicket to the dataset
+                totalNumberEntries: filteredChartData.map((item) => item.totalNumberEntries), // Add totalNumberEntries to the dataset
+                pricePerTicket: filteredChartData.map((item) => item.pricePerTicket), // Add pricePerTicket to the dataset
             },
         ],
     },
@@ -1372,7 +1375,7 @@ new Chart(ctx4, {
                 text: "Combined VIP STATS", // Specify the title text
                 fontSize: 720, // You can adjust the font size as needed
                 color: "greenyellow", // Specify the title color
-                padding: 20, // Add padding to the title
+                padding: 10, // Add padding to the title
                 fontStyle: "italic", // Apply italic style to the title
                 font: {
                     weight: 'bold', // Apply bold style to the title
@@ -1399,6 +1402,7 @@ new Chart(ctx4, {
         },
     },
 });
+
 
 
 
