@@ -152,18 +152,25 @@ document.getElementById('mutant-button').addEventListener('click', event => {
         const etherscanApiKey = '5W8M3RM6HVZ5Z4NDSMRYBMHP95UVWHQMUP';
 
         // Specify the contract addresses
-        const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92';
-        const contractAddressV2 = '0x6C02eb58354C0f53D4BA024B1b2b94FA7B1b9389';
-        const contractAddressV3 = '0x6C02eb58354C0f53D4BA024B1b2b94FA7B1b9389';
+                                  
+        const contractAddress = '0x08e1bc602c44ecb7932387b6792c3cb0a5c64a92'; // 5
+        const contractAddressV11 = '0x6C02eb58354C0f53D4BA024B1b2b94FA7B1b9389'; // 6
+        const contractAddressV3 = '0xB09B88ac29Dd39B4a719650C44aC787Fa2D2D7a3'; // 7
+        const contractAddressV2 = '0x64ab48Ea8c549Dd95F89fe9a04e75090Db60f3C2'; // 1
+        const contractAddressV22 = '0xDaAd77cFfCfb138622dAf8fF2448d36352Cf49C3'; // 2
+        const contractAddressV33 = '0x77B5475c07c9D430Eb81C0871D4De74d5E839d96'; // 3
+        const contractAddressV4 = '0xf5018A2ee080b06ad16F8E7FDC94FE3accc335E1'; // 4
 
         const tokenContractAddress = '0xc084a29dd0c9436568435938b1c6c5af4f5c035f';
 
         // Function signature of the "buyEntry" function
         const buyEntrySignature = '0xb26a78c5'; // Replace with the actual function signature
+        const buyEntrySignatureV2 = '0x23685496';
 
 
         // Function signature of the "cancelRaffle" function
         const cancelRaffleSignature = '0x5fba3171'; // Replace with the actual function signature
+        
 
         // Function signatures to filter for the new chart
         const createRaffleSignatures = ['0xcf482ee9', '0x01a6e623', '0xead5c7bd'];
@@ -653,16 +660,19 @@ fetch(apiUrlV2)
                   const matchingItem = transactions.find((item) => item.hash == extractedItem.transactionHash);
                   if (matchingItem) {
                     extractedItem.tokenName = matchingItem.tokenName;
+
+                    console.log('matchingItem', matchingItem);
                   }
                 });
 
                 // Log the updated extractedDataArray with tokenNames
-
+                console.log('extractedDataArrayv2', extractedDataArrayv2);
                 // Fetch data from the Etherscan API
 fetch(apiUrlV2)
   .then((response) => response.json())
   .then((data) => {
     const transactions = data.result;
+   
 
     // Calculate the offset between local timezone and Etherscan's timezone
     const localTimezoneOffset = new Date().getTimezoneOffset(); // Offset in minutes
@@ -675,37 +685,26 @@ fetch(apiUrlV2)
       );
     }
 
-    // Function to fetch token balance for an address
-    function fetchTokenBalance(address) {
-      return fetch(`${tokenApiUrl}&address=${address}`)
-        .then((response) => response.json())
-        .then((data) => {
-          return data.result;
-        })
-        .catch((error) => {
-          console.error(`Error fetching token balance for address ${address}:`, error);
-          return '0';
-        });
-    }
+    console.log('transactions', transactions);
 
-
+    
     // Process transactions and sum _numberEntries, valueInEther, and valueInDummy for BuyEntry chart
     transactions.forEach((transaction) => {
-      if (transaction.input.startsWith(buyEntrySignature)) {
+      if (transaction.input.startsWith(buyEntrySignatureV2)) {
         // Decode the input data to get _numberEntries and _buyTicketRaffleId
         const inputData = transaction.input.substring(10); // Remove the function signature
         const web3 = new Web3();
-        const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256', 'address'], inputData);
+        const decodedData = web3.eth.abi.decodeParameters(['uint256', 'uint256'], inputData);
+        console.log('decodedData', decodedData);
+
 
         // Extract _numberEntries, _buyTicketRaffleId, and valueInWei
         const numberEntries = parseInt(decodedData[1]);
         const buyTicketRaffleId = decodedData[0];
         const valueInWei = parseInt(transaction.value);
         const valueInEther = valueInWei / 1e18; // Convert wei to ether
-
         // Calculate valueInDummy based on transaction hash match
         const valueInDummy = sumsByTransactionDummy[transaction.hash] || 0;
-
         // Check if the buyTicketRaffleId exists in the aggregated data, and initialize if not
         if (!buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId]) {
           buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId] = {
@@ -717,7 +716,6 @@ fetch(apiUrlV2)
             buyTicketRaffleId: buyTicketRaffleId, // Add buyTicketRaffleId to the entry
           };
         }
- 
         // Add the data to the aggregated BuyEntry transactions for this buyTicketRaffleId
         buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId].totalNumberEntries += numberEntries;
         buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId].totalValueInEther += valueInEther;
@@ -726,20 +724,19 @@ fetch(apiUrlV2)
         // Add the hash to the array
         buyEntryTransactionsByRaffleIdv2[buyTicketRaffleId].hashes.push(transaction.hash);
 
+
      // Iterate through extractedDataArray to match topics1Data with buyTicketRaffleId and add tokenName
 extractedDataArrayv2.forEach((extractedItem) => {
   for (const buyRaffleId in buyEntryTransactionsByRaffleIdv2) {
     const raffleId = buyEntryTransactionsByRaffleIdv2[buyRaffleId];
     if (raffleId.buyTicketRaffleId == extractedItem.topics1Data) {
       raffleId.tokenName = extractedItem.tokenName;
-
              
             }
           }
         });
       }
     });
-
 
 
 
@@ -1319,12 +1316,20 @@ const raffleIdsC = Object.keys(mergedData);
 // Sort the raffleIdsC array in descending order based on totalValueInEther
 raffleIdsC.sort((a, b) => mergedData[b].totalValueInEther - mergedData[a].totalValueInEther);
 
-// Create an array of objects containing labels and data values
+// Create an array of objects containing labels, data values, totalNumberEntries, and pricePerTicket
 const chartData = raffleIdsC.map((raffleId) => ({
     label: mergedData[raffleId].tokenName,
     value: mergedData[raffleId].totalValueInEther,
     totalNumberEntries: mergedData[raffleId].totalNumberEntries,
-}));
+    pricePerTicket: mergedData[raffleId].totalValueInEther / mergedData[raffleId].totalNumberEntries, // Calculate pricePerTicket
+   
+   
+})
+
+
+);
+console.log('chartData', chartData);
+
 
 // Create the chart
 const ctx4 = document.getElementById("CombinedChart").getContext("2d");
@@ -1340,6 +1345,7 @@ new Chart(ctx4, {
                 borderColor: "rgba(75, 192, 192, 1)",
                 borderWidth: 1,
                 totalNumberEntries: chartData.map((item) => item.totalNumberEntries), // Add totalNumberEntries to the dataset
+                pricePerTicket: chartData.map((item) => item.pricePerTicket), // Add pricePerTicket to the dataset
             },
         ],
     },
@@ -1363,7 +1369,7 @@ new Chart(ctx4, {
         plugins: {
             title: {
                 display: true,
-                text: "VIP STATS OF ALL SMART CONTRACTS VERSIONS", // Specify the title text
+                text: "Combined VIP STATS", // Specify the title text
                 fontSize: 720, // You can adjust the font size as needed
                 color: "greenyellow", // Specify the title color
                 padding: 20, // Add padding to the title
@@ -1383,8 +1389,9 @@ new Chart(ctx4, {
                         if (label === "ETH Spent") {
                             const ethValue = context.parsed.y.toFixed(2);
                             const totalNumberEntries = dataset.totalNumberEntries[context.dataIndex];
-                            const pricePerTicket = (context.parsed.y / totalNumberEntries).toFixed(2);
+                            const pricePerTicket = dataset.pricePerTicket[context.dataIndex].toFixed(7);
                             return `${label}: ${ethValue} ETH\nTotal Entries: ${totalNumberEntries}\nPrice per Ticket: ${pricePerTicket} ETH`;
+                            console.error('pricePerTicket:', pricePerTicket);
                         }
                     },
                 },
