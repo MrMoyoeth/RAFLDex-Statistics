@@ -122,15 +122,7 @@
         <canvas id="cancelRaffleChart"></canvas>
     </div>
 
-    <!-- Add a 3px separation -->
-    <div style="height: 3px;"></div>
-
-    <!-- Container for the BuyEntry Tickets by Month chart -->
-    <div class="chart-container" style="height: 400px;">
-        <canvas id="buyEntryTicketsByMonthChart"></canvas>
-    </div>
-
- 
+   
 
     <script>
 
@@ -223,19 +215,23 @@ document.getElementById('mutant-button').addEventListener('click', event => {
         const apiUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddress}&apikey=${etherscanApiKey}`;
         const apiUrlV2 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
         const apiUrlV3 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV3}&apikey=${etherscanApiKey}`;
+        const apiUrlV4 = `https://api.etherscan.io/api?module=account&action=txlist&address=${contractAddressV4}&apikey=${etherscanApiKey}`;
 
                 const apiDummyUrl = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddress}&apikey=${etherscanApiKey}`;
                 const apiDummyUrlV2 = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
                 const apiDummyUrlV3 = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddressV3}&apikey=${etherscanApiKey}`;
+                const apiDummyUrlV4 = `https://api.etherscan.io/api?module=account&action=tokentx&address=${contractAddressV4}&apikey=${etherscanApiKey}`;
                 
                 const apiNFT = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddress}&apikey=${etherscanApiKey}`;
                 const apiNFTV2 = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddressV2}&apikey=${etherscanApiKey}`;
                 const apiNFTV3 = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddressV3}&apikey=${etherscanApiKey}`;
+                const apiNFTV4 = `https://api.etherscan.io/api?module=account&action=tokennfttx&address=${contractAddressV4}&apikey=${etherscanApiKey}`;
 
                 // Define the API URL
         const apiLogsUrl = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddress}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
         const apiLogsUrlV2 = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddressV2}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
         const apiLogsUrlV3 = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddressV2}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
+        const apiLogsUrlV4 = `https://api.etherscan.io/api?module=logs&action=getLogs&address=${contractAddressV4}&topic0=${NFTTransferIDSignature}&apikey=${etherscanApiKey}`;
 
 
 
@@ -291,6 +287,27 @@ document.getElementById('mutant-button').addEventListener('click', event => {
         let sumsByDayInDextv3 = {};
         let valueInDextv3 = {};
         let valueInDummyv3 = {};
+        let buyEntryGhnHoldersCountV4 = {};
+        let buyEntryAhcHoldersCountV4 = {};
+        let buyEntryNonHoldersCountV4 = {};
+        let buyEntryBAYCHoldersCountV4 = {};
+        let buyEntryMAYCHoldersCountV4 = {};
+        let buyEntryMGHNHoldersCountV4 = {};
+        let buyEntryAKCBHoldersCountV4 = {};
+        let buyEntryThePlagueHoldersCountV4 = {};
+        let buyEntrySappySealsHoldersCountV4 = {};
+        let sumsByDayInEtherV4 = {};
+        let buyEntryTransactionsByDayV4 = {};
+        let buyEntryTotalEntriesByDayV4 = {};
+        let createRaffleTransactionsByDayV4 = {};
+        let cancelRaffleTransactionsByDayV4 = {};
+        let setWinnerRaffleByDayV4 = {};
+        let sumsByDayInDummyv4 = {};
+        let buyEntryTicketsByMonthV4 = {};
+        let sumsByDayInDextv4 = {};
+        let valueInDextv4 = {};
+        let valueInDummyv4 = {};
+        let combinedSumsByDayInDummy = {};
         
         
         
@@ -571,167 +588,8 @@ fetch(apiDummyUrlV2)
                         }
                     }
                 });
-
-            
-// Load and parse the CSV file
-fetch('ghn.csv')
-    .then((response) => response.text())
-    .then((csvData) => {
-        // Use PapaParse to parse the CSV data
-        Papa.parse(csvData, {
-            header: true, // Treat the first row as headers
-            dynamicTyping: true, // Parse numbers as numbers
-            skipEmptyLines: true, // Skip empty lines
-            complete: function (results) {
-
-                // Create sets for GHN, AHC, and BAYC addresses
-                const ghnAddresses = new Set();
-                const ahcAddresses = new Set();
-                const baycAddresses = new Set();
-                const maycAddresses = new Set();
-                const mghnAddresses = new Set();
-                const akcbAddresses = new Set();
-                const theplagueAddresses = new Set();
-                const ssAddresses = new Set ();
-
-                results.data.forEach((row) => {
-                    const ghnAddress = row['GHNHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const ahcAddress = row['AHCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const baycAddress = row['BAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const maycAddress = row['MAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const mghnAddress = row['MGHNHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const akcbAddress = row['AKCBHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const theplagueAddress = row['ThePlagueHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const ssAddress = row['SSHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    if (ghnAddress) {
-                        ghnAddresses.add(ghnAddress);
-                    }
-                    if (ahcAddress) {
-                        ahcAddresses.add(ahcAddress);
-                    }
-
-                    if (baycAddress) {
-                        baycAddresses.add(baycAddress);
-                    }
-                    if (maycAddress) {
-                        maycAddresses.add(maycAddress);
-                    }
-
-                    if (mghnAddress) {
-                        mghnAddresses.add(mghnAddress);
-                    }
-
-                    if (akcbAddress) {
-                        akcbAddresses.add(akcbAddress);
-                    }
-
-                    if (theplagueAddress) {
-                        theplagueAddresses.add(theplagueAddress);
-                    }
-
-                        if (ssAddress) {
-                        ssAddresses.add(ssAddress);
-                    }
-
                     
-                });
-
-                transactions.forEach((transaction) => {
-                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
-                    const month = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}`;
-
-                    if (transaction.input.startsWith(buyEntrySignatureV2)) {
-                        const address = transaction.from.toLowerCase();
-                        const isGHN = ghnAddresses.has(address);
-                        const isAHC = ahcAddresses.has(address);
-                        const isBAYC = baycAddresses.has(address);
-                        const isMAYC = maycAddresses.has(address);
-                        const isMGHN = mghnAddresses.has(address);
-                        const isAKCB = akcbAddresses.has(address);
-                        const isThePlague = theplagueAddresses.has(address);
-                        const isSS = ssAddresses.has(address);
-                        
-
-                        if (isGHN) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryGhnHoldersCountV2[month]) {
-                                buyEntryGhnHoldersCountV2[month] = 0;
-                            }
-                            buyEntryGhnHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-
-                        if (isAHC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryAhcHoldersCountV2[month]) {
-                                buyEntryAhcHoldersCountV2[month] = 0;
-                            }
-                            buyEntryAhcHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-
-
-                        if (isBAYC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryBAYCHoldersCountV2[month]) {
-                                buyEntryBAYCHoldersCountV2[month] = 0;
-                            }
-                            buyEntryBAYCHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-
-                        if (isMAYC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryMAYCHoldersCountV2[month]) {
-                                buyEntryMAYCHoldersCountV2[month] = 0;
-                            }
-                            buyEntryMAYCHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-                        if (isMGHN) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryMGHNHoldersCountV2[month]) {
-                                buyEntryMGHNHoldersCountV2[month] = 0;
-                            }
-                            buyEntryMGHNHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-                     
-                        if (isAKCB) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryAKCBHoldersCountV2[month]) {
-                                buyEntryAKCBHoldersCountV2[month] = 0;
-                            }
-                            buyEntryAKCBHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-                        if (isThePlague) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryThePlagueHoldersCountV2[month]) {
-                                buyEntryThePlagueHoldersCountV2[month] = 0;
-                            }
-                            buyEntryThePlagueHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-
-                        if (isSS) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntrySappySealsHoldersCountV2[month]) {
-                                buyEntrySappySealsHoldersCountV2[month] = 0;
-                            }
-                            buyEntrySappySealsHoldersCountV2[month]++; // Increment the count for this month
-                        } 
-                     
-                                                
-                    }
-
-                 
-
-                    // Increment the buyEntryTicketsByMonth count for this month
-                    if (!buyEntryTicketsByMonthV2[month]) {
-                        buyEntryTicketsByMonthV2[month] = 0;
-                    }
-                    buyEntryTicketsByMonthV2[month]++;
-                });
-
-
-
-            
-                    
-            }})})})
+            })
             
         
 
@@ -840,9 +698,7 @@ if (sumsByDayInEtherV3[dayKey]) {
 
 
 
-// Initialize objects to store sums by day
-const sumsByDayInDummyv3 = {};
-const sumsByDayInDextv3 = {};
+
 
 // Make an HTTP GET request to the API
 fetch(apiDummyUrlV3)
@@ -884,56 +740,14 @@ fetch(apiDummyUrlV3)
 
     
     });
+    ;
 
-
-;
-// Assuming you have already fetched and processed the data
-
-    // Define the data for the chart
-    const labelsdx = Object.keys(sumsByDayInDextv3);
-    const dextdata = labelsdx.map((dayKey) => sumsByDayInDextv3[dayKey]);
-
-    // Get a reference to the canvas element
-    const ctxd = document.getElementById('dextSpentPerDayChart').getContext('2d');
-
-    // Create the chart
-    new Chart(ctxd, {
-      type: 'bar', // Bar chart
-      data: {
-        labels: labelsdx, // X-axis labels (dates)
-        datasets: [{
-          label: 'DEXT Spent on Tickets',
-          data: dextdata, // Y-axis data (transaction counts)
-          backgroundColor: 'rgba(39, 226, 245, 0.8)', // Bar color
-          borderColor: 'rgba(39, 226, 245, 0.8)', // Border color of bars
-          borderWidth: 1, // Border width of bars
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: 'category',
-            title: {
-              display: true,
-              text: 'Day', // X-axis title
-            },
-          },
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'DEXT', // Y-axis title
-            },
-          },
-        },
-      },
-    });
   })
   .catch((error) => {
     console.error('Error fetching data from Etherscan:', error);
   });
+
+  
 
 
                                // Process transactions and group by day for CreateRaffle chart
@@ -983,165 +797,14 @@ fetch(apiDummyUrlV3)
                 });
 
             
-// Load and parse the CSV file
-fetch('ghn.csv')
-    .then((response) => response.text())
-    .then((csvData) => {
-        // Use PapaParse to parse the CSV data
-        Papa.parse(csvData, {
-            header: true, // Treat the first row as headers
-            dynamicTyping: true, // Parse numbers as numbers
-            skipEmptyLines: true, // Skip empty lines
-            complete: function (results) {
-
-                // Create sets for GHN, AHC, and BAYC addresses
-                const ghnAddresses = new Set();
-                const ahcAddresses = new Set();
-                const baycAddresses = new Set();
-                const maycAddresses = new Set();
-                const mghnAddresses = new Set();
-                const akcbAddresses = new Set();
-                const theplagueAddresses = new Set();
-                const ssAddresses = new Set ();
-
-                results.data.forEach((row) => {
-                    const ghnAddress = row['GHNHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const ahcAddress = row['AHCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const baycAddress = row['BAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const maycAddress = row['MAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const mghnAddress = row['MGHNHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const akcbAddress = row['AKCBHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const theplagueAddress = row['ThePlagueHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const ssAddress = row['SSHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    if (ghnAddress) {
-                        ghnAddresses.add(ghnAddress);
-                    }
-                    if (ahcAddress) {
-                        ahcAddresses.add(ahcAddress);
-                    }
-
-                    if (baycAddress) {
-                        baycAddresses.add(baycAddress);
-                    }
-                    if (maycAddress) {
-                        maycAddresses.add(maycAddress);
-                    }
-
-                    if (mghnAddress) {
-                        mghnAddresses.add(mghnAddress);
-                    }
-
-                    if (akcbAddress) {
-                        akcbAddresses.add(akcbAddress);
-                    }
-
-                    if (theplagueAddress) {
-                        theplagueAddresses.add(theplagueAddress);
-                    }
-
-                        if (ssAddress) {
-                        ssAddresses.add(ssAddress);
-                    }
-
-                    
-                });
-
-                transactions.forEach((transaction) => {
-                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
-                    const month = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}`;
-
-                    if (transaction.input.startsWith(buyEntrySignature)) {
-                        const address = transaction.from.toLowerCase();
-                        const isGHN = ghnAddresses.has(address);
-                        const isAHC = ahcAddresses.has(address);
-                        const isBAYC = baycAddresses.has(address);
-                        const isMAYC = maycAddresses.has(address);
-                        const isMGHN = mghnAddresses.has(address);
-                        const isAKCB = akcbAddresses.has(address);
-                        const isThePlague = theplagueAddresses.has(address);
-                        const isSS = ssAddresses.has(address);
-                        
-
-                        if (isGHN) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryGhnHoldersCountV3[month]) {
-                                buyEntryGhnHoldersCountV3[month] = 0;
-                            }
-                            buyEntryGhnHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-
-                        if (isAHC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryAhcHoldersCountV3[month]) {
-                                buyEntryAhcHoldersCountV3[month] = 0;
-                            }
-                            buyEntryAhcHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-
-
-                        if (isBAYC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryBAYCHoldersCountV3[month]) {
-                                buyEntryBAYCHoldersCountV3[month] = 0;
-                            }
-                            buyEntryBAYCHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-
-                        if (isMAYC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryMAYCHoldersCountV3[month]) {
-                                buyEntryMAYCHoldersCountV3[month] = 0;
-                            }
-                            buyEntryMAYCHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-                        if (isMGHN) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryMGHNHoldersCountV3[month]) {
-                                buyEntryMGHNHoldersCountV3[month] = 0;
-                            }
-                            buyEntryMGHNHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-                     
-                        if (isAKCB) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryAKCBHoldersCountV3[month]) {
-                                buyEntryAKCBHoldersCountV3[month] = 0;
-                            }
-                            buyEntryAKCBHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-                        if (isThePlague) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryThePlagueHoldersCountV3[month]) {
-                                buyEntryThePlagueHoldersCountV3[month] = 0;
-                            }
-                            buyEntryThePlagueHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-
-                        if (isSS) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntrySappySealsHoldersCountV3[month]) {
-                                buyEntrySappySealsHoldersCountV3[month] = 0;
-                            }
-                            buyEntrySappySealsHoldersCountV3[month]++; // Increment the count for this month
-                        } 
-                     
-                                                
-                    }
-
-                 
-
-                    // Increment the buyEntryTicketsByMonth count for this month
-                    if (!buyEntryTicketsByMonthV3[month]) {
-                        buyEntryTicketsByMonthV3[month] = 0;
-                    }
-                    buyEntryTicketsByMonthV3[month]++;
-                });
 
 
 
             
                     
-            }})})})
+            })
+
+
 
 
 
@@ -1433,8 +1096,7 @@ fetch(apiDummyUrl)
     });
 
 
-// Initialize a new object to store the combined sums
-const combinedSumsByDayInDummy = {};
+
 
 // Iterate over the keys in sumsByDayInEther
 for (const dayKey in sumsByDayInDummy) {
@@ -1462,56 +1124,6 @@ for (const dayKey in sumsByDayInDummyv3) {
 
 console.log('combinedSumsByDayInDummy', combinedSumsByDayInDummy);
 
-// Assuming you have already fetched and processed the data
-
-// Define the data for the chart
-const labelsd = Object.keys(combinedSumsByDayInDummy);
-const dummydata = labelsd.map((dayKey) => combinedSumsByDayInDummy[dayKey]);
-
-// Sort the labels array in ascending order (from oldest to newest)
-labelsd.sort((a, b) => new Date(a) - new Date(b));
-
-// Get a reference to the canvas element
-const ctxd = document.getElementById('dummySpentPerDayChart').getContext('2d');
-
-// Create the chart
-new Chart(ctxd, {
-    type: 'bar', // Bar chart
-    data: {
-        labels: labelsd, // X-axis labels (dates)
-        datasets: [{
-            label: 'Dummy Spent on Tickets',
-            data: dummydata, // Y-axis data (transaction counts)
-            backgroundColor: 'rgba(245, 40, 145, 0.8)', // Bar color
-            borderColor: 'rgba(245, 40, 145, 0.8)', // Border color of bars
-            borderWidth: 1, // Border width of bars
-        }],
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                type: 'category',
-                title: {
-                    display: true,
-                    text: 'Day', // X-axis title
-                },
-            },
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'DUMMY', // Y-axis title
-                },
-            },
-        },
-    },
-});
-  })
-  .catch((error) => {
-    console.error('Error fetching data from Etherscan:', error);
-  });
 
 
   
@@ -1681,393 +1293,103 @@ for (const dayKey in setWinnerRaffleByDayV3) {
 
                 
 
-                
-
-// Load and parse the CSV file
-fetch('ghn.csv')
-    .then((response) => response.text())
-    .then((csvData) => {
-        // Use PapaParse to parse the CSV data
-        Papa.parse(csvData, {
-            header: true, // Treat the first row as headers
-            dynamicTyping: true, // Parse numbers as numbers
-            skipEmptyLines: true, // Skip empty lines
-            complete: function (results) {
-
-                // Create sets for GHN, AHC, and BAYC addresses
-                const ghnAddresses = new Set();
-                const ahcAddresses = new Set();
-                const baycAddresses = new Set();
-                const maycAddresses = new Set();
-                const mghnAddresses = new Set();
-                const akcbAddresses = new Set();
-                const theplagueAddresses = new Set();
-                const ssAddresses = new Set ();
-
-                results.data.forEach((row) => {
-                    const ghnAddress = row['GHNHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const ahcAddress = row['AHCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const baycAddress = row['BAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const maycAddress = row['MAYCHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const mghnAddress = row['MGHNHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const akcbAddress = row['AKCBHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const theplagueAddress = row['ThePlagueHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    const ssAddress = row['SSHolderAddress']?.substring(0, 42)?.toLowerCase();
-                    if (ghnAddress) {
-                        ghnAddresses.add(ghnAddress);
-                    }
-                    if (ahcAddress) {
-                        ahcAddresses.add(ahcAddress);
-                    }
-
-                    if (baycAddress) {
-                        baycAddresses.add(baycAddress);
-                    }
-                    if (maycAddress) {
-                        maycAddresses.add(maycAddress);
-                    }
-
-                    if (mghnAddress) {
-                        mghnAddresses.add(mghnAddress);
-                    }
-
-                    if (akcbAddress) {
-                        akcbAddresses.add(akcbAddress);
-                    }
-
-                    if (theplagueAddress) {
-                        theplagueAddresses.add(theplagueAddress);
-                    }
-
-                        if (ssAddress) {
-                        ssAddresses.add(ssAddress);
-                    }
-
-                    
-                });
-
-                transactions.forEach((transaction) => {
-                    const timestamp = convertToEtherscanTimezone(parseInt(transaction.timeStamp));
-                    const month = `${timestamp.getFullYear()}-${(timestamp.getMonth() + 1).toString().padStart(2, '0')}`;
-
-                    if (transaction.input.startsWith(buyEntrySignature)) {
-                        const address = transaction.from.toLowerCase();
-                        const isGHN = ghnAddresses.has(address);
-                        const isAHC = ahcAddresses.has(address);
-                        const isBAYC = baycAddresses.has(address);
-                        const isMAYC = maycAddresses.has(address);
-                        const isMGHN = mghnAddresses.has(address);
-                        const isAKCB = akcbAddresses.has(address);
-                        const isThePlague = theplagueAddresses.has(address);
-                        const isSS = ssAddresses.has(address);
-                        
-
-                        if (isGHN) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryGhnHoldersCount[month]) {
-                                buyEntryGhnHoldersCount[month] = 0;
-                            }
-                            buyEntryGhnHoldersCount[month]++; // Increment the count for this month
-                        } 
-
-                        if (isAHC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryAhcHoldersCount[month]) {
-                                buyEntryAhcHoldersCount[month] = 0;
-                            }
-                            buyEntryAhcHoldersCount[month]++; // Increment the count for this month
-                        } 
+    
 
 
-                        if (isBAYC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryBAYCHoldersCount[month]) {
-                                buyEntryBAYCHoldersCount[month] = 0;
-                            }
-                            buyEntryBAYCHoldersCount[month]++; // Increment the count for this month
-                        } 
+// Assuming you have already fetched and processed the data
 
-                        if (isMAYC) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryMAYCHoldersCount[month]) {
-                                buyEntryMAYCHoldersCount[month] = 0;
-                            }
-                            buyEntryMAYCHoldersCount[month]++; // Increment the count for this month
-                        } 
-                        if (isMGHN) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryMGHNHoldersCount[month]) {
-                                buyEntryMGHNHoldersCount[month] = 0;
-                            }
-                            buyEntryMGHNHoldersCount[month]++; // Increment the count for this month
-                        } 
-                     
-                        if (isAKCB) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryAKCBHoldersCount[month]) {
-                                buyEntryAKCBHoldersCount[month] = 0;
-                            }
-                            buyEntryAKCBHoldersCount[month]++; // Increment the count for this month
-                        } 
-                        if (isThePlague) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntryThePlagueHoldersCount[month]) {
-                                buyEntryThePlagueHoldersCount[month] = 0;
-                            }
-                            buyEntryThePlagueHoldersCount[month]++; // Increment the count for this month
-                        } 
+// Define the data for the chart
+const labelsd = Object.keys(combinedSumsByDayInDummy);
+const dummydata = labelsd.map((dayKey) => combinedSumsByDayInDummy[dayKey]);
 
-                        if (isSS) {
-                            // Initialize the count for this month if it doesn't exist
-                            if (!buyEntrySappySealsHoldersCount[month]) {
-                                buyEntrySappySealsHoldersCount[month] = 0;
-                            }
-                            buyEntrySappySealsHoldersCount[month]++; // Increment the count for this month
-                        } 
-                     
-                                                
-                    }
+// Sort the labels array in ascending order (from oldest to newest)
+labelsd.sort((a, b) => new Date(a) - new Date(b));
 
-                  
+// Get a reference to the canvas element
+const ctxd = document.getElementById('dummySpentPerDayChart').getContext('2d');
 
-                    // Increment the buyEntryTicketsByMonth count for this month
-                    if (!buyEntryTicketsByMonth[month]) {
-                        buyEntryTicketsByMonth[month] = 0;
-                    }
-                    buyEntryTicketsByMonth[month]++;
-                });
-
-                
-
-      
-
-                 // Initialize an object to store the combined counts
-const combinedGhnHoldersCount = {};
-const combinedAhcHoldersCount = {};
-const combinedBAYCHoldersCount = {};
-const combinedMAYCHoldersCount = {};
-const combinedMGHNHoldersCount = {};
-const combinedAKCBHoldersCount = {};
-const combinedThePlagueHoldersCount = {};
-const combinedSappySealsHoldersCount = {};
-
-// ... Initialize combined objects for other counts ...
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntryGhnHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntryGhnHoldersCountV2.hasOwnProperty(month) &&
-        buyEntryGhnHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedGhnHoldersCount[month] =
-            (buyEntryGhnHoldersCount[month] || 0) +
-            (buyEntryGhnHoldersCountV2[month] || 0) +
-            (buyEntryGhnHoldersCountV3[month] || 0);
-    } else if (buyEntryGhnHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedGhnHoldersCount[month] =
-            (buyEntryGhnHoldersCount[month] || 0) +
-            (buyEntryGhnHoldersCountV2[month] || 0);
-    } else if (buyEntryGhnHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedGhnHoldersCount[month] =
-            (buyEntryGhnHoldersCount[month] || 0) +
-            (buyEntryGhnHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedGhnHoldersCount[month] = buyEntryGhnHoldersCount[month] || 0;
-    }
-}
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntryAhcHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntryAhcHoldersCountV2.hasOwnProperty(month) &&
-        buyEntryAhcHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedAhcHoldersCount[month] =
-            (buyEntryAhcHoldersCount[month] || 0) +
-            (buyEntryAhcHoldersCountV2[month] || 0) +
-            (buyEntryAhcHoldersCountV3[month] || 0);
-    } else if (buyEntryAhcHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedAhcHoldersCount[month] =
-            (buyEntryAhcHoldersCount[month] || 0) +
-            (buyEntryAhcHoldersCountV2[month] || 0);
-    } else if (buyEntryAhcHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedAhcHoldersCount[month] =
-            (buyEntryAhcHoldersCount[month] || 0) +
-            (buyEntryAhcHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedAhcHoldersCount[month] = buyEntryAhcHoldersCount[month] || 0;
-    }
-}
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntryBAYCHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntryBAYCHoldersCountV2.hasOwnProperty(month) &&
-        buyEntryBAYCHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedBAYCHoldersCount[month] =
-            (buyEntryBAYCHoldersCount[month] || 0) +
-            (buyEntryBAYCHoldersCountV2[month] || 0) +
-            (buyEntryBAYCHoldersCountV3[month] || 0);
-    } else if (buyEntryBAYCHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedBAYCHoldersCount[month] =
-            (buyEntryBAYCHoldersCount[month] || 0) +
-            (buyEntryBAYCHoldersCountV2[month] || 0);
-    } else if (buyEntryBAYCHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedBAYCHoldersCount[month] =
-            (buyEntryBAYCHoldersCount[month] || 0) +
-            (buyEntryBAYCHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedBAYCHoldersCount[month] = buyEntryBAYCHoldersCount[month] || 0;
-    }
-}
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntryMAYCHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntryMAYCHoldersCountV2.hasOwnProperty(month) &&
-        buyEntryMAYCHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedMAYCHoldersCount[month] =
-            (buyEntryMAYCHoldersCount[month] || 0) +
-            (buyEntryMAYCHoldersCountV2[month] || 0) +
-            (buyEntryMAYCHoldersCountV3[month] || 0);
-    } else if (buyEntryMAYCHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedMAYCHoldersCount[month] =
-            (buyEntryMAYCHoldersCount[month] || 0) +
-            (buyEntryMAYCHoldersCountV2[month] || 0);
-    } else if (buyEntryMAYCHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedMAYCHoldersCount[month] =
-            (buyEntryMAYCHoldersCount[month] || 0) +
-            (buyEntryMAYCHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedMAYCHoldersCount[month] = buyEntryMAYCHoldersCount[month] || 0;
-    }
-}
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntryMGHNHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntryMGHNHoldersCountV2.hasOwnProperty(month) &&
-        buyEntryMGHNHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedMGHNHoldersCount[month] =
-            (buyEntryMGHNHoldersCount[month] || 0) +
-            (buyEntryMGHNHoldersCountV2[month] || 0) +
-            (buyEntryMGHNHoldersCountV3[month] || 0);
-    } else if (buyEntryMGHNHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedMGHNHoldersCount[month] =
-            (buyEntryMGHNHoldersCount[month] || 0) +
-            (buyEntryMGHNHoldersCountV2[month] || 0);
-    } else if (buyEntryMGHNHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedMGHNHoldersCount[month] =
-            (buyEntryMGHNHoldersCount[month] || 0) +
-            (buyEntryMGHNHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedMGHNHoldersCount[month] = buyEntryMGHNHoldersCount[month] || 0;
-    }
-}
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntryAKCBHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntryAKCBHoldersCountV2.hasOwnProperty(month) &&
-        buyEntryAKCBHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedAKCBHoldersCount[month] =
-            (buyEntryAKCBHoldersCount[month] || 0) +
-            (buyEntryAKCBHoldersCountV2[month] || 0) +
-            (buyEntryAKCBHoldersCountV3[month] || 0);
-    } else if (buyEntryAKCBHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedAKCBHoldersCount[month] =
-            (buyEntryAKCBHoldersCount[month] || 0) +
-            (buyEntryAKCBHoldersCountV2[month] || 0);
-    } else if (buyEntryAKCBHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedAKCBHoldersCount[month] =
-            (buyEntryAKCBHoldersCount[month] || 0) +
-            (buyEntryAKCBHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedAKCBHoldersCount[month] = buyEntryAKCBHoldersCount[month] || 0;
-    }
-}
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntryThePlagueHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntryThePlagueHoldersCountV2.hasOwnProperty(month) &&
-        buyEntryThePlagueHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedThePlagueHoldersCount[month] =
-            (buyEntryThePlagueHoldersCount[month] || 0) +
-            (buyEntryThePlagueHoldersCountV2[month] || 0) +
-            (buyEntryThePlagueHoldersCountV3[month] || 0);
-    } else if (buyEntryThePlagueHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedThePlagueHoldersCount[month] =
-            (buyEntryThePlagueHoldersCount[month] || 0) +
-            (buyEntryThePlagueHoldersCountV2[month] || 0);
-    } else if (buyEntryThePlagueHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedThePlagueHoldersCount[month] =
-            (buyEntryThePlagueHoldersCount[month] || 0) +
-            (buyEntryThePlagueHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedThePlagueHoldersCount[month] = buyEntryThePlagueHoldersCount[month] || 0;
-    }
-}
-
-// Iterate over the months (assuming buyEntryGhnHoldersCount, buyEntryGhnHoldersCountV2, and buyEntryGhnHoldersCountV3 have the same months)
-for (const month in buyEntrySappySealsHoldersCount) {
-    // Check if the month exists in all three objects before summing
-    if (
-        buyEntrySappySealsHoldersCountV2.hasOwnProperty(month) &&
-        buyEntrySappySealsHoldersCountV3.hasOwnProperty(month)
-    ) {
-        combinedSappySealsHoldersCount[month] =
-            (buyEntrySappySealsHoldersCount[month] || 0) +
-            (buyEntrySappySealsHoldersCountV2[month] || 0) +
-            (buyEntrySappySealsHoldersCountV3[month] || 0);
-    } else if (buyEntrySappySealsHoldersCountV2.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV3, sum the first two objects
-        combinedSappySealsHoldersCount[month] =
-            (buyEntrySappySealsHoldersCount[month] || 0) +
-            (buyEntrySappySealsHoldersCountV2[month] || 0);
-    } else if (buyEntrySappySealsHoldersCountV3.hasOwnProperty(month)) {
-        // If the month doesn't exist in buyEntryGhnHoldersCountV2, sum the first and third objects
-        combinedSappySealsHoldersCount[month] =
-            (buyEntrySappySealsHoldersCount[month] || 0) +
-            (buyEntrySappySealsHoldersCountV3[month] || 0);
-    } else {
-        // If the month doesn't exist in either buyEntryGhnHoldersCountV2 or buyEntryGhnHoldersCountV3, just use the value from buyEntryGhnHoldersCount
-        combinedSappySealsHoldersCount[month] = buyEntrySappySealsHoldersCount[month] || 0;
-    }
-}
+// Create the chart
+new Chart(ctxd, {
+    type: 'bar', // Bar chart
+    data: {
+        labels: labelsd, // X-axis labels (dates)
+        datasets: [{
+            label: 'Dummy Spent on Tickets',
+            data: dummydata, // Y-axis data (transaction counts)
+            backgroundColor: 'rgba(245, 40, 145, 0.8)', // Bar color
+            borderColor: 'rgba(245, 40, 145, 0.8)', // Border color of bars
+            borderWidth: 1, // Border width of bars
+        }],
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: 'category',
+                title: {
+                    display: true,
+                    text: 'Day', // X-axis title
+                },
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'DUMMY', // Y-axis title
+                },
+            },
+        },
+    },
+});
 
 
 
 
 
+// Assuming you have already fetched and processed the data
+
+    // Define the data for the chart
+    const labelsdx = Object.keys(sumsByDayInDextv3);
+    const dextdata = labelsdx.map((dayKey) => sumsByDayInDextv3[dayKey]);
+
+    // Get a reference to the canvas element
+    const ctxdd = document.getElementById('dextSpentPerDayChart').getContext('2d');
+
+    // Create the chart
+    new Chart(ctxdd, {
+      type: 'bar', // Bar chart
+      data: {
+        labels: labelsdx, // X-axis labels (dates)
+        datasets: [{
+          label: 'DEXT Spent on Tickets',
+          data: dextdata, // Y-axis data (transaction counts)
+          backgroundColor: 'rgba(39, 226, 245, 0.8)', // Bar color
+          borderColor: 'rgba(39, 226, 245, 0.8)', // Border color of bars
+          borderWidth: 1, // Border width of bars
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'category',
+            title: {
+              display: true,
+              text: 'Day', // X-axis title
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'DEXT', // Y-axis title
+            },
+          },
+        },
+      },
+    });
 
 
 
@@ -2358,126 +1680,23 @@ new Chart(buyEntryValueByDayCtxs, {
  
 
 
-                               // Create BuyEntry Tickets by Month Chart
-                               
-const buyEntryTicketsByMonthCtx = document.getElementById('buyEntryTicketsByMonthChart').getContext('2d');
-new Chart(buyEntryTicketsByMonthCtx, {
-    type: 'bar',
-    data: {
-        labels: Object.keys(buyEntryTicketsByMonth),
-        datasets: [
-            {
-                label: 'GodHatesNFTees Holders',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => combinedGhnHoldersCount[month] || 0),
-                backgroundColor: 'rgba(58, 39, 245, 0.8)',
-                borderColor: 'rgba(58, 39, 245, 0.8)',
-                borderWidth: 1
-            },
-            {
-                label: 'ApeHaterClub Holders',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryAhcHoldersCount[month] || 0),
-                backgroundColor: 'rgba(39, 245, 230, 0.8)',
-                borderColor: 'rgba(39, 245, 230, 0.8)',
-                borderWidth: 1
-            },
-            {
-                label: 'BAYC Holders',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryBAYCHoldersCount[month] || 0),
-                backgroundColor: 'rgba(245, 67, 39, 0.8)',
-                borderColor: 'rgba(245, 67, 39, 0.8)',
-                borderWidth: 1
-            },
 
-            {
-                label: 'MAYC Holders',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryMAYCHoldersCount[month] || 0),
-                backgroundColor: 'rgba(187, 245, 39, 0.8)',
-                borderColor: 'rgba(187, 245, 39, 0.8)',
-                borderWidth: 1  
-            },
-
-
-            {
-                label: 'MGHN Holders',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryMGHNHoldersCount[month] || 0),
-                backgroundColor: 'rgba(153, 151, 27, 0.8))',
-                borderColor: 'rgba(153, 151, 27, 0.8)',
-                borderWidth: 1  
-            },
-
-            {
-                label: 'AKCB Holders',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryAKCBHoldersCount[month] || 0),
-                backgroundColor: 'rgba(140, 19, 88, 0.8)',
-                borderColor: 'rgba(140, 19, 88, 0.8)',
-                borderWidth: 1  
-            },
-
-            {
-                label: 'The Plague Holders',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntryThePlagueHoldersCount[month] || 0),
-                backgroundColor: 'rgba(72, 251, 62, 0.8)',
-                borderColor: 'rgba(72, 251, 62, 0.8)',
-                borderWidth: 1  
-            },
-
-            {
-                label: 'SappySeals',
-                data: Object.keys(buyEntryTicketsByMonth).map((month) => buyEntrySappySealsHoldersCount[month] || 0),
-                backgroundColor: 'rgba(201, 128, 0, 0.8)',
-                borderColor: 'rgba(201, 128, 0, 0.8)',
-                borderWidth: 1  
-            },
-                ]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                type: 'category',
-                title: {
-                    display: true,
-                    text: 'Month'
-                }
-            },
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Txs'
-                }
-            }
-        },
-   
-    }
-    
-});  
 
 
 
 
 },
 
+        
 
+)})
 
-                            error: function (error) {
-                                console.error('Error parsing CSV:', error);
-                            },
-                        });
-                    })
-                    .catch((error) => {
-                        console.error('Error loading CSV file:', error);
-                    });
-            })
-            .catch((error) => {
-                console.error('Error fetching data from Etherscan:', error);
-            });
+            
 
           
 
 
-            
+
 
 
     </script>
